@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">SlackGo</string>
+    <string name="signed_in_fmt">Signed in</string>
+    <string name="signing_in">Signing in…</string>
+    <string name="signed_out">Signed out</string>
+
+    <string name="status">Ready</string>
+
+    <!-- Button labels -->
+    <string name="sign_out">Sign Out</string>
+    <string name="disconnect">Disconnect</string>
+
+
+    <string name="title_text">Google Sign-In\nQuickstart</string>
+    <string name="in_the_office">You are in the office</string>
+
+</resources>
