@@ -11,10 +11,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.google.android.gms.common.api.GoogleApiClient;
+
 import java.io.InputStream;
 
 /**
@@ -22,7 +24,6 @@ import java.io.InputStream;
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private GoogleApiClient mGoogleApiClient;
     private ImageView slackButton;
 
     @Override
@@ -31,11 +32,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         slackButton = (ImageView) findViewById(R.id.slackButton);
-        new DownloadImageTask(slackButton).execute("https://platform.slack-edge.com/img/sign_in_with_slack@2x.png");
+        new DownloadImageTask(slackButton).execute(getString(R.string.slack_image_link));
         slackButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Uri slackUri = Uri.parse("https://slack.com/oauth/authorize?" +
-                        "scope=identity.basic&client_id=2946387922.79631581941&redirect_uri=scv%3A%2F%2Fauthorize");
+                Uri slackUri = Uri.parse(getString(R.string.slack_link));
 
                 Intent intent = new Intent(Intent.ACTION_VIEW,slackUri);
 
@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 mIcon11 = BitmapFactory.decodeStream(in);
             } catch (Exception e) {
-                Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
             return mIcon11;

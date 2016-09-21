@@ -14,4 +14,7 @@
     <string name="title_text">Google Sign-In\nQuickstart</string>
     <string name="in_the_office">You are in the office</string>
 
+    <string name="slack_link">https://slack.com/oauth/authorize?scope=identity.basic&amp;client_id=2946387922.79631581941&amp;redirect_uri=scv%3A%2F%2Fauthorize</string>
+    <string name="slack_image_link">https://platform.slack-edge.com/img/sign_in_with_slack@2x.png</string>
+    <string name="message_image_failed">Download Slack Image Failed: </string>
 </resources>
