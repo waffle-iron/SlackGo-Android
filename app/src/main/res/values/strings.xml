@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">SlackGo</string>
+    <string name="app_welcome">Welcome to SlackGo!</string>
+    <string name="app_welcome_text">This application is used to add (or kick) you to a channel depending on your current location</string>
     <string name="signed_in_fmt">Signed in</string>
     <string name="signing_in">Signing in…</string>
     <string name="signed_out">Signed out</string>
@@ -14,7 +16,16 @@
     <string name="title_text">Google Sign-In\nQuickstart</string>
     <string name="in_the_office">You are in the office</string>
 
-    <string name="slack_link">https://slack.com/oauth/authorize?scope=identity.basic&amp;client_id=2946387922.79631581941&amp;redirect_uri=scv%3A%2F%2Fauthorize</string>
+    <string name="channel_office">oficina</string>
+    <string name="slack_link">https://slack.com/oauth/authorize?scope=%1$s&amp;client_id=%2$s&amp;redirect_uri=%3$s</string>
     <string name="slack_image_link">https://platform.slack-edge.com/img/sign_in_with_slack@2x.png</string>
     <string name="message_image_failed">Download Slack Image Failed: </string>
+    <string name="location_disabled_title">Please activate location</string>
+    <string name="location_disabled_message">Please activate location</string>
+
+    <string name="slack_token_link">https://slack.com/api/oauth.access?client_id=%1$s&amp;client_secret=%2$s&amp;code=%3$s&amp;redirect_uri=%4$s</string>
+    <string name="client_id">2946387922.79631581941</string>
+    <string name="redirect_oauth">scv%3A%2F%2Fauthorize</string>
+    <string name="client_secret">4800a7de9816b75e6906ed166ff5662c</string>
+    <string name="slack_scope">channels:write</string>
 </resources>

@@ -32,4 +32,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:9.0.0'
 
     compile 'com.android.support:percent:23.0.0'
+    compile 'com.android.volley:volley:1.0.0'
 }
