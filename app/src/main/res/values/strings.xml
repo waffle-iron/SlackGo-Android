@@ -6,6 +6,8 @@
     <string name="signing_in">Signing in…</string>
     <string name="signed_out">Signed out</string>
 
+    <string name="channels_file">channels.txt</string>
+
     <string name="status">Ready</string>
 
     <!-- Button labels -->
@@ -16,8 +18,11 @@
     <string name="title_text">Google Sign-In\nQuickstart</string>
     <string name="in_the_office">You are in the office</string>
 
+    <string name="channels_title">List of Channels</string>
+    <string name="add_channel">new channel</string>
+
     <string name="channel_office">oficina</string>
-    <string name="slack_link">https://slack.com/oauth/authorize?scope=%1$s&amp;client_id=%2$s&amp;redirect_uri=%3$s</string>
+    <string name="slack_link">https://slack.com/oauth/authorize?scope=%1$s&amp;client_id=%2$s&amp;redirect_uri=%3$s&amp;state=resumeSignIn</string>
     <string name="slack_image_link">https://platform.slack-edge.com/img/sign_in_with_slack@2x.png</string>
     <string name="message_image_failed">Download Slack Image Failed: </string>
     <string name="location_disabled_title">Please activate location</string>
