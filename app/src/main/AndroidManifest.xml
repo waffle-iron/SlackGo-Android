@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme">
 
         <meta-data android:name="com.google.android.maps.v2.API_KEY"
-            android:value=""/>
+            android:value="AIzaSyAEv7OX4I4AfKu_-PFCCltTKVxPFJGGTEQ"/>
 
         <uses-library android:name="com.google.android.maps" />
 
@@ -37,8 +37,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="scv"/>
-                <data android:host="edit"/>
-
+                <data android:host="authorize"/>
             </intent-filter>
 
         </activity>
@@ -50,8 +49,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="scv"/>
-
-                <data android:host="authorize"/>
+                <data android:host="edit"/>
 
             </intent-filter>
 

@@ -1,6 +1,5 @@
 package com.scv.slackgo;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +9,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -31,6 +32,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.wearable.Channel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,7 +71,11 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
         mGoogleApiClient.connect();
 
-        slackCode = getIntent().getData().getQueryParameters("code").get(0);
+        if(getIntent().getData() != null) {
+            slackCode = getIntent().getData().getQueryParameters("code").get(0);
+        } else {
+            slackCode = getIntent().getStringExtra(Constants.SLACK_CODE);
+        }
 
         queue = Volley.newRequestQueue(this);
 
@@ -83,6 +89,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         mGeofenceStorage = new SimpleGeofenceStore(this);
         // Instantiate the current List of geofences.
         mGeofenceList = new ArrayList<Geofence>();
+
+        Button back = (Button)findViewById(R.id.back_button);
 
         createGeofences();
     }
@@ -283,6 +291,13 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         // Store these flat versions in SharedPreferences and add them to the geofence list.
         mGeofenceStorage.setGeofence(Constants.SCV_ID, mAndroidBuildingGeofence);
         mGeofenceList.add(mAndroidBuildingGeofence.toGeofence());
+    }
+
+    public void backToList(View view) {
+        Intent listActivity = new Intent(this, ChannelsActivity.class);
+        listActivity.putExtra(Constants.SLACK_CODE, slackCode);
+        startActivity(listActivity);
+
     }
 }
 

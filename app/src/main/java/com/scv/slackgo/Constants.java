@@ -55,8 +55,8 @@ public final class Constants {
     public static final float INVALID_FLOAT_VALUE = -999.0f;
     public static final int INVALID_INT_VALUE = -999;
 
-    public static final double SCV_OFFICE_LAT = -34.6024;
-    public static final double SCV_OFFICE_LONG = -58.4543;
+    public static final float SCV_OFFICE_LAT = -34.6024f;
+    public static final float SCV_OFFICE_LONG = -58.4543f;
     public static final String SCV_ID = "1";
     public static final long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     public static final long FASTEST_INTERVAL = 2000; /* 2 sec */
@@ -67,5 +67,7 @@ public final class Constants {
     public static final String ASK_LOCATION= "Please active your location";
     public static final float RADIUS_METERS = 60.0f;
     public static final String API_TOKEN= "api token";
+    public static final String SELECTED_CHANNEL="selected channel";
+    public static final String SLACK_CODE= "slack code";
 
 }

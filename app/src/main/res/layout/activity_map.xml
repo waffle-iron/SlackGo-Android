@@ -23,12 +23,13 @@
         android:layout_marginTop="@dimen/welcome_margin"/>
 
     <Button
-        android:id="@+id/sign_out_button"
+        android:id="@+id/back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/welcome_margin"
         android:padding="@dimen/button_padding"
         android:layout_gravity="center_horizontal"
-        android:text="@string/sign_out" />
+        android:text="@string/back"
+        android:onClick="backToList"/>
 
 </LinearLayout>
