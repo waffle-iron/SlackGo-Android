@@ -9,12 +9,12 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -36,6 +36,11 @@ public class ChannelsActivity extends ListActivity implements LoaderManager.Load
 
         Set<String> channels = setupChannels();
 
+        Integer[] imageId = {
+                R.drawable.arrow
+
+        };
+
         // Create a progress bar to display while the list loads
         ProgressBar progressBar = new ProgressBar(this);
         progressBar.setLayoutParams(new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT,
@@ -47,12 +52,16 @@ public class ChannelsActivity extends ListActivity implements LoaderManager.Load
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         root.addView(progressBar);
 
-        channelsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1 , channels.toArray(new String[channels.size()]));
+        channelsAdapter = new CustomList(this, channels.toArray(new String[channels.size()]), imageId);
 
         getLoaderManager().initLoader(0, null, this);
 
         TextView titleview = new TextView(this);
         titleview.setText(R.string.channels_title);
+        titleview.setTextSize(30f);
+        titleview.setTextColor(Color.parseColor("#FFFFFF"));
+        titleview.setBackgroundColor(Color.parseColor("#1db08f"));
+
 
         getListView().addHeaderView(titleview);
 

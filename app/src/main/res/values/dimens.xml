@@ -7,4 +7,5 @@
     <dimen name="title_size">30sp</dimen>
     <dimen name="welcome_margin">40sp</dimen>
     <dimen name="map_height">183dp</dimen>
+    <dimen name="plus_size">50dp</dimen>
 </resources>
