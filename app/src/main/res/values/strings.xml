@@ -14,7 +14,6 @@
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
 
-
     <string name="title_text">Google Sign-In\nQuickstart</string>
     <string name="in_the_office">You are in the office</string>
 
@@ -37,4 +36,22 @@
     <string name="channel_lat_sufix">_lat</string>
     <string name="channel_long_sufix">_long</string>
     <string name="back">Back</string>
+
+    <!--GEOFENCING ERROR MESSAGES-->
+    <string name="geofence_not_available">Geofence service is not available now</string>
+    <string name="geofence_too_many_geofences">Your app has registered too many geofences</string>
+    <string name="geofence_too_many_pending_intents">
+        You have provided too many PendingIntents to the addGeofences() call
+    </string>
+    <string name="geofence_transition_invalid_type">
+        Geofence transition error: invalid transition type %1$d
+    </string>
+    <string name="unknown_geofence_error">
+        Unknown error: the Geofence service is not available now
+    </string>
+    <string name="geofence_transition_entered">Entered</string>
+    <string name="geofence_transition_exited">Exited</string>
+    <string name="unknown_geofence_transition">Unknown Transition</string>
+    <string name="geofence_transition_notification_text">Click notification to return app</string>
+
 </resources>
