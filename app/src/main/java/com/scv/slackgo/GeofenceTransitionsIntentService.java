@@ -17,34 +17,34 @@
 package com.scv.slackgo;
 
 import android.app.IntentService;
-import android.content.DialogInterface;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
+import android.text.TextUtils;
 import android.util.Log;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
-import com.google.android.gms.wearable.Wearable;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.concurrent.TimeUnit;
+
 
 /**
  * Listens for geofence transition changes.
  */
-public class GeofenceTransitionsIntentService extends IntentService
-        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class GeofenceTransitionsIntentService extends IntentService {
+
+    protected static final String TAG = "GeofenceTransitionsIS";
+
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -53,19 +53,12 @@ public class GeofenceTransitionsIntentService extends IntentService
     private String apiToken;
 
     public GeofenceTransitionsIntentService() {
-        super(GeofenceTransitionsIntentService.class.getSimpleName());
+        super(TAG);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Wearable.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
-        queue = Volley.newRequestQueue(this);
     }
 
     /**
@@ -75,91 +68,112 @@ public class GeofenceTransitionsIntentService extends IntentService
      */
     @Override
     protected void onHandleIntent(Intent intent) {
-        apiToken = intent.getStringExtra(Constants.API_TOKEN);
+//        apiToken = intent.getStringExtra(Constants.API_TOKEN);
 
         GeofencingEvent geoFenceEvent = GeofencingEvent.fromIntent(intent);
         if (geoFenceEvent.hasError()) {
             int errorCode = geoFenceEvent.getErrorCode();
-        } else {
+            String errorMessage = GeofenceErrorMessages.getErrorString(this,
+                                                                       geoFenceEvent.getErrorCode());
+            Log.e(TAG, errorMessage);
+        }
 
-            int transitionType = geoFenceEvent.getGeofenceTransition();
-            if (Geofence.GEOFENCE_TRANSITION_ENTER == transitionType) {
-                // Connect to the Google Api service in preparation for sending a DataItem.
-                mGoogleApiClient.blockingConnect(Constants.CONNECTION_TIME_OUT_MS, TimeUnit.MILLISECONDS);
-                // Get the geofence id triggered. Note that only one geofence can be triggered at a
-                // time in this example, but in some cases you might want to consider the full list
-                // of geofences triggered.
-                String triggeredGeoFenceId = geoFenceEvent.getTriggeringGeofences().get(0)
-                        .getRequestId();
+        int transitionType = geoFenceEvent.getGeofenceTransition();
 
+        if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER ||
+            transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
 
-                new AlertDialog.Builder(GeofenceTransitionsIntentService.this)
-                        .setTitle("Cerca de la oficina")
-                        .setMessage("Parece que estás cerca de la oficina, quieres entrar a las salas de slack configuradas?")
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                joinToChannel(Constants.OFFICE_CHANNEL);
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                        .show();
+            List<Geofence> triggeringGeofences = geoFenceEvent.getTriggeringGeofences();
+            String geofenceTransitionDetails = getGeofenceTransitionDetails(this, transitionType, triggeringGeofences);
 
-
-                mGoogleApiClient.disconnect();
-            } else if (Geofence.GEOFENCE_TRANSITION_EXIT == transitionType) {
-                // Delete the data item when leaving a geofence region.
-                mGoogleApiClient.blockingConnect(Constants.CONNECTION_TIME_OUT_MS, TimeUnit.MILLISECONDS);
-                Wearable.DataApi.deleteDataItems(mGoogleApiClient, Constants.GEOFENCE_DATA_ITEM_URI).await();
-
-                mGoogleApiClient.disconnect();
-            }
+            sendNotification(geofenceTransitionDetails);
+            Log.i(TAG, geofenceTransitionDetails);
+        }
+        else {
+            Log.e(TAG, getString(R.string.geofence_transition_invalid_type, transitionType));
         }
     }
 
 
 
-    @Override
-    public void onConnected(Bundle connectionHint) {
+    private String getGeofenceTransitionDetails(
+            Context context,
+            int geofenceTransition,
+            List<Geofence> triggeringGeofences) {
+
+        String geofenceTransitionString = getTransitionString(geofenceTransition);
+
+        // Get the Ids of each geofence that was triggered.
+        ArrayList triggeringGeofencesIdsList = new ArrayList();
+        for (Geofence geofence : triggeringGeofences) {
+            triggeringGeofencesIdsList.add(geofence.getRequestId());
+        }
+        String triggeringGeofencesIdsString = TextUtils.join(", ", triggeringGeofencesIdsList);
+
+        return geofenceTransitionString + ": " + triggeringGeofencesIdsString;
     }
 
-    @Override
-    public void onConnectionSuspended(int cause) {
+    /**
+     * Posts a notification in the notification bar when a transition is detected.
+     * If the user clicks the notification, control goes to the MainActivity.
+     */
+    private void sendNotification(String notificationDetails) {
+        // Create an explicit content Intent that starts the main Activity.
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+
+        // Construct a task stack.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+
+        // Add the main Activity to the task stack as the parent.
+        stackBuilder.addParentStack(MainActivity.class);
+
+        // Push the content Intent onto the stack.
+        stackBuilder.addNextIntent(notificationIntent);
+
+        // Get a PendingIntent containing the entire back stack.
+        PendingIntent notificationPendingIntent =
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Get a notification builder that's compatible with platform versions >= 4
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+        // Define the notification settings.
+        builder.setSmallIcon(R.mipmap.ic_launcher)
+               // In a real app, you may want to use a library like Volley
+               // to decode the Bitmap.
+               .setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                                                          R.mipmap.ic_launcher))
+               .setColor(Color.RED)
+               .setContentTitle(notificationDetails)
+               .setContentText("Click notification to return app")
+               .setContentIntent(notificationPendingIntent);
+
+        // Dismiss notification once the user touches it.
+        builder.setAutoCancel(true);
+
+        // Get an instance of the Notification manager
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Issue the notification
+        mNotificationManager.notify(0, builder.build());
     }
 
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-    }
-
-    private void joinToChannel(String channel) {
-        String url = String.format("https://slack.com/api/channels.join?token=%1$s&name=%2$s", apiToken, channel);
-
-        StringRequest channelsReq = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        JSONObject responseToJson = null;
-                        try {
-                            responseToJson = new JSONObject(response);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("HttpClient", "error: " + error.toString());
-                    }
-                });
-        queue.add(channelsReq);
+    /**
+     * Maps geofence transition types to their human-readable equivalents.
+     *
+     * @param transitionType    A transition type constant defined in Geofence
+     * @return                  A String indicating the type of transition
+     */
+    private String getTransitionString(int transitionType) {
+        switch (transitionType) {
+            case Geofence.GEOFENCE_TRANSITION_ENTER:
+                return getString(R.string.geofence_transition_entered);
+            case Geofence.GEOFENCE_TRANSITION_EXIT:
+                return getString(R.string.geofence_transition_exited);
+            default:
+                return getString(R.string.unknown_geofence_transition);
+        }
     }
 
 }
