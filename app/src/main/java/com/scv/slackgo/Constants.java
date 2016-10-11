@@ -24,6 +24,8 @@ public final class Constants {
     private Constants() {
     }
 
+    public static final String PACKAGE_NAME = "com.scv.slackgo";
+
 
     // Request code to attempt to resolve Google Play services connection failures.
     public final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
@@ -71,4 +73,9 @@ public final class Constants {
     public static final String SLACK_CODE= "slack code";
 
     public static final String SHARED_PREFERENCES_NAME = "slackgo.SHARED_PREFERENCES_NAME";
+
+
+    public static final String GEOFENCES_ADDED_KEY = PACKAGE_NAME + ".GEOFENCES_ADDED_KEY";
+
+
 }
