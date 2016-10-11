@@ -64,9 +64,9 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        if ((ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) || (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)){
+        if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) || (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)){
             ActivityCompat.requestPermissions(this,
-                                              new String[]{ android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION },
+                                              new String[]{ Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION },
                                               Constants.RC_ASK_PERMISSIONS);
         }
 
@@ -112,7 +112,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
     @Override
     public void onConnected(Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, getGeofencingRequest(), getGeofencePendingIntent()).setResultCallback(this);
         }
         Log.i(TAG, "\n\n\nConnected to GoogleApiClient\n\n\n");
@@ -162,7 +162,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         // The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
         // GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
         // is already inside that geofence.
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | GeofencingRequest.INITIAL_TRIGGER_DWELL | GeofencingRequest.INITIAL_TRIGGER_EXIT);
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | GeofencingRequest.INITIAL_TRIGGER_EXIT);
 
         // Add the geofences to be monitored by geofencing service.
         builder.addGeofences(mGeofenceList);
@@ -223,6 +223,32 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     }
 
     public void onResult(Status status) {
+        if (status.isSuccess()) {
+            Toast.makeText(this, "Result success", Toast.LENGTH_SHORT).show();
+            /*
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putBoolean(Constants.GEOFENCES_ADDED_KEY, mGeofencesAdded);
+            editor.apply();
+
+            // Update the UI. Adding geofences enables the Remove Geofences button, and removing
+            // geofences enables the Add Geofences button.
+            setButtonsEnabledState();
+
+            Toast.makeText(
+                    this,
+                    getString(mGeofencesAdded ? R.string.geofences_added :
+                              R.string.geofences_removed),
+                    Toast.LENGTH_SHORT
+            ).show();
+            */
+        } else {
+            // Get the status code for the error and log it using a user-friendly message.
+            String errorMessage = GeofenceErrorMessages.getErrorString(this,
+                                                                       status.getStatusCode());
+            Log.e(TAG, errorMessage);
+        }
+
+
     }
 
     private PendingIntent getGeofencePendingIntent() {
@@ -259,20 +285,20 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         startActivity(listActivity);
 
     }
-    
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         for (String permisson: permissions) {
             switch (permisson) {
-                case android.Manifest.permission.ACCESS_FINE_LOCATION: {
+                case Manifest.permission.ACCESS_FINE_LOCATION: {
                     if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, getGeofencingRequest(), getGeofencePendingIntent()).setResultCallback(this);
                     }
                     break;
                 }
-                case android.Manifest.permission.ACCESS_COARSE_LOCATION: {
+                case Manifest.permission.ACCESS_COARSE_LOCATION: {
                     if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         map.setMyLocationEnabled(true);
                     }
