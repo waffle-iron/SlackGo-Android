@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "966490143466",
+    "project_id": "firebase-slackgo"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:966490143466:android:7063d878edd5975a",
+        "android_client_info": {
+          "package_name": "com.scv.slackgo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "966490143466-or9cvftfvn13rmg5erunn67nkqf1cu7m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.scv.slackgo",
+            "certificate_hash": "94A1F9171D735660475B9747B8A38BDE9D69F924"
+          }
+        },
+        {
+          "client_id": "966490143466-eikb4b3hnfn5b7735gchdi95kana350l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEv7OX4I4AfKu_-PFCCltTKVxPFJGGTEQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

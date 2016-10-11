@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.scv.slackgo.MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/sign_in_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/welcome_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_welcome"
+            android:textSize="@dimen/title_size"
+            android:layout_marginTop="@dimen/welcome_margin"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/welcome_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_welcome_text"
+            android:textSize="@dimen/text_size"
+            android:layout_margin="@dimen/welcome_margin"
+            android:textAlignment="inherit"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/welcome_title"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/slackButton"
+            android:visibility="visible"
+            android:clickable="true"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/welcome_text"
+            android:layout_marginTop="20dp"/>
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>
+
