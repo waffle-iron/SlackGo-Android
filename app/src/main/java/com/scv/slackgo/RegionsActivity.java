@@ -25,14 +25,14 @@ import java.util.Set;
 /**
  * Created by ayelen@scvsoft.com.
  */
-public class ChannelsActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class RegionsActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     ArrayAdapter channelsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_channel_list);
+        setContentView(R.layout.activity_regions_list);
 
         Set<String> channels = setupChannels();
 
@@ -57,7 +57,7 @@ public class ChannelsActivity extends ListActivity implements LoaderManager.Load
         getLoaderManager().initLoader(0, null, this);
 
         TextView titleview = new TextView(this);
-        titleview.setText(R.string.channels_title);
+        titleview.setText(R.string.regions_title);
         titleview.setTextSize(30f);
         titleview.setTextColor(Color.parseColor("#FFFFFF"));
         titleview.setBackgroundColor(Color.parseColor("#1db08f"));
@@ -125,7 +125,7 @@ public class ChannelsActivity extends ListActivity implements LoaderManager.Load
 
         String  channelName = l.getItemAtPosition(position).toString();
 
-        Intent channelDetailsIntent = new Intent(this, MapActivity.class);
+        Intent channelDetailsIntent = new Intent(this, DetailRegionActivity.class);
         channelDetailsIntent.putExtra(Constants.SELECTED_CHANNEL, channelName);
 
         String slackCode = getIntent().getStringExtra(Constants.SLACK_CODE);

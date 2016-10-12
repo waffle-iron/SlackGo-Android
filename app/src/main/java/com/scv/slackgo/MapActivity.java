@@ -1,5 +1,6 @@
 package com.scv.slackgo;
 
+
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -280,7 +281,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                                   .build());
     }
     public void backToList(View view) {
-        Intent listActivity = new Intent(this, ChannelsActivity.class);
+        Intent listActivity = new Intent(this, RegionsActivity.class);
         listActivity.putExtra(Constants.SLACK_CODE, slackCode);
         startActivity(listActivity);
 
