@@ -17,7 +17,7 @@
     <string name="title_text">Google Sign-In\nQuickstart</string>
     <string name="in_the_office">You are in the office</string>
 
-    <string name="channels_title">List of Channels</string>
+    <string name="regions_title">List of Regions</string>
     <string name="add_channel">new channel</string>
 
     <string name="channel_office">oficina</string>
@@ -53,5 +53,8 @@
     <string name="geofence_transition_exited">Exited</string>
     <string name="unknown_geofence_transition">Unknown Transition</string>
     <string name="geofence_transition_notification_text">Click notification to return app</string>
+
+
+    <string name="region_hint">Region Name</string>
 
 </resources>
