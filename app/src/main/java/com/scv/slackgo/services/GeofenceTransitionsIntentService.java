@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.scv.slackgo;
+package com.scv.slackgo.services;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -32,6 +32,9 @@ import com.android.volley.RequestQueue;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
+import com.scv.slackgo.helpers.GeofenceErrorMessages;
+import com.scv.slackgo.R;
+import com.scv.slackgo.activities.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;

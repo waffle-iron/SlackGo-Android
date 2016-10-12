@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.scv.slackgo;
+package com.scv.slackgo.helpers;
 
 import android.net.Uri;
 

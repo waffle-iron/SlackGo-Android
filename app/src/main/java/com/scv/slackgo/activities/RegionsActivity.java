@@ -1,4 +1,4 @@
-package com.scv.slackgo;
+package com.scv.slackgo.activities;
 
 
 import android.app.ActionBar;
@@ -18,6 +18,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.scv.slackgo.helpers.Constants;
+import com.scv.slackgo.R;
 
 import java.util.HashSet;
 import java.util.Set;

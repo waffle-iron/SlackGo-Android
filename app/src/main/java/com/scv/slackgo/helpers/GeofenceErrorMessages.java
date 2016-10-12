@@ -1,9 +1,10 @@
-package com.scv.slackgo;
+package com.scv.slackgo.helpers;
 
 import android.content.Context;
 import android.content.res.Resources;
 
 import com.google.android.gms.location.GeofenceStatusCodes;
+import com.scv.slackgo.R;
 
 /**
  * Created by kado on 10/6/16.

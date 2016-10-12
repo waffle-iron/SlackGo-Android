@@ -1,4 +1,4 @@
-package com.scv.slackgo;
+package com.scv.slackgo.activities;
 
 /**
  * Created by ayelen@scvsoft.com
@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.scv.slackgo.R;
 
 import java.io.InputStream;
 

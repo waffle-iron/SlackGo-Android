@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/map_and_sign_out"
-    tools:context="com.scv.slackgo.MapActivity">
+    tools:context="com.scv.slackgo.activities.MapActivity">
 
     <FrameLayout
         android:id="@+id/office_map"
