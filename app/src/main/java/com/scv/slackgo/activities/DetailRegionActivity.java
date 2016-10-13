@@ -1,4 +1,4 @@
-package com.scv.slackgo;
+package com.scv.slackgo.activities;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,6 +15,8 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.scv.slackgo.helpers.Constants;
+import com.scv.slackgo.R;
 
 import static com.scv.slackgo.R.id.channel_map;
 

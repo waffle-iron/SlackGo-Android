@@ -21,7 +21,7 @@
 
         <uses-library android:name="com.google.android.maps" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.MAIN" />
@@ -29,7 +29,7 @@
 
         </activity>
 
-        <activity android:name=".RegionsActivity"
+        <activity android:name=".activities.RegionsActivity"
             android:exported="true"
             android:launchMode="singleInstance">
             <intent-filter>
@@ -43,7 +43,7 @@
 
         </activity>
 
-        <activity android:name=".MapActivity"
+        <activity android:name=".activities.MapActivity"
             android:exported="true"
             android:launchMode="singleInstance">
             <intent-filter>
@@ -55,13 +55,13 @@
 
         </activity>
 
-        <activity android:name=".DetailRegionActivity"
+        <activity android:name=".activities.DetailRegionActivity"
             android:exported="true"
             android:launchMode="singleInstance">
         </activity>
 
 
-        <service android:name=".GeofenceTransitionsIntentService" />
+        <service android:name=".services.GeofenceTransitionsIntentService" />
     </application>
 
 </manifest>

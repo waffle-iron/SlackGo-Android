@@ -1,4 +1,4 @@
-package com.scv.slackgo;
+package com.scv.slackgo.activities;
 
 
 import android.Manifest;
@@ -33,6 +33,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.scv.slackgo.helpers.Constants;
+import com.scv.slackgo.helpers.GeofenceErrorMessages;
+import com.scv.slackgo.services.GeofenceTransitionsIntentService;
+import com.scv.slackgo.R;
 
 import java.util.ArrayList;
 import java.util.List;
