@@ -4,9 +4,7 @@ package com.scv.slackgo.activities;
  * Created by ayelen@scvsoft.com
  */
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -17,6 +15,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.scv.slackgo.R;
+import com.scv.slackgo.helpers.Constants;
 
 import java.io.InputStream;
 

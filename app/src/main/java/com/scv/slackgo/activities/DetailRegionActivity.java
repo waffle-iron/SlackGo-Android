@@ -15,8 +15,8 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.R;
+import com.scv.slackgo.helpers.Constants;
 
 import static com.scv.slackgo.R.id.channel_map;
 

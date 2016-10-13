@@ -19,8 +19,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.R;
+import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.services.SlackApiService;
 
 import java.util.HashSet;
