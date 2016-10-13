@@ -56,7 +56,7 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
 
         String slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
 
-        if(slackCode == null) {
+        if (slackCode == null) {
 
             String code = getIntent().getData().getQueryParameters("code").get(0);
             slackService.getSlackToken(String.format(getString(R.string.slack_token_link),
@@ -95,7 +95,7 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
         SharedPreferences channels = this.getSharedPreferences(
                 getString(R.string.channels_list), Context.MODE_PRIVATE);
 
-        if(channels == null || channels.getAll().size() == 0) {
+        if (channels == null || channels.getAll().size() == 0) {
             SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
 
@@ -135,7 +135,7 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
 
         super.onListItemClick(l, v, position, id);
 
-        String  channelName = l.getItemAtPosition(position).toString();
+        String channelName = l.getItemAtPosition(position).toString();
 
         Intent channelDetailsIntent = new Intent(this, DetailRegionActivity.class);
         channelDetailsIntent.putExtra(Constants.SELECTED_CHANNEL, channelName);
