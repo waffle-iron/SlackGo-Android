@@ -6,7 +6,8 @@
     <string name="signing_in">Signing in…</string>
     <string name="signed_out">Signed out</string>
 
-    <string name="channels_list">channels</string>
+    <!--<string name="channels_list">channels</string>-->
+    <string name="preferences_regions_list">regions</string>
 
     <string name="status">Ready</string>
 
@@ -34,8 +35,8 @@
     <string name="slack_scope">channels:write</string>
     <string name="slack_token">slackToken</string>
 
-    <string name="channel_lat_sufix">_lat</string>
-    <string name="channel_long_sufix">_long</string>
+    <string name="region_lat_sufix">_lat</string>
+    <string name="region_long_sufix">_long</string>
     <string name="back">Back</string>
 
     <!--GEOFENCING ERROR MESSAGES-->

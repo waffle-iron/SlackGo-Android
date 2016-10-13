@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -17,6 +18,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
+import com.scv.slackgo.helpers.SlackGoApplication;
+import com.scv.slackgo.models.Region;
 
 import static com.scv.slackgo.R.id.channel_map;
 
@@ -29,8 +32,10 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
     private String slackCode;
     private SeekBar regionSeekBar;
     private TextView regionValue;
+    private EditText regionName;
     private Circle circle;
     private GoogleMap googleMap;
+    private Region region;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,8 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
         setContentView(R.layout.activity_detail_region);
 
         slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
+        SlackGoApplication app = (SlackGoApplication) getApplicationContext();
+        region = app.getRegion();
 
         SupportMapFragment mapFragment = new SupportMapFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -45,13 +52,19 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
         fragmentTransaction.commit();
         mapFragment.getMapAsync(this);
 
-        regionSeekBar = (SeekBar)findViewById(R.id.region_seek_bar);
-        regionValue = (TextView)findViewById(R.id.region_value);
+        regionSeekBar = (SeekBar) findViewById(R.id.region_seek_bar);
+        regionValue = (TextView) findViewById(R.id.region_radius_value);
+        regionName = (EditText) findViewById(R.id.region_name);
 
         regionSeekBar.setMax(100);
-        regionValue.setText(String.valueOf(10 * 10));
-
-        //regionSeekBar.setSecondaryProgress(10);
+        if (region != null) {
+            regionName.setText(region.getName());
+            regionSeekBar.setProgress((int) region.getRadius() / 10);
+            regionValue.setText(String.valueOf(region.getRadius() * 10));
+        } else {
+            regionSeekBar.setProgress(10);
+            regionValue.setText(10 * 10);
+        }
 
         regionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -69,10 +82,9 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     if (progress >= 0 && progress <= regionSeekBar.getMax()) {
-
                         String progressString = String.valueOf(progress * 10);
                         regionValue.setText(progressString);
-                        seekBar.setSecondaryProgress(progress);
+                        seekBar.setProgress(progress);
                         circle.setRadius(progress * 10);
                     }
                 }
@@ -87,19 +99,19 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setCompassEnabled(true);
 
-
-        LatLng officePosition = new LatLng(Constants.SCV_OFFICE_LAT, Constants.SCV_OFFICE_LONG);
+        LatLng officePosition = new LatLng(region.getLatitude(), region.getLongitude());
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(officePosition);
         markerOptions.draggable(false);
-        markerOptions.title(Constants.OFFICE);
+        markerOptions.title(region.getName());
 
         circle = googleMap.addCircle(new CircleOptions().center(officePosition)
-                                                        .radius(100).strokeColor(Color.argb(200, 255, 0, 255))
-                                                        .fillColor(Color.argb(25, 255, 0, 255)));
+                .radius(region.getRadius())
+                .strokeColor(Color.argb(200, 255, 0, 255))
+                .fillColor(Color.argb(25, 255, 0, 255)));
 
         googleMap.addMarker(markerOptions);
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, 15.0f));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, region.getCameraZoom()));
     }
 }
