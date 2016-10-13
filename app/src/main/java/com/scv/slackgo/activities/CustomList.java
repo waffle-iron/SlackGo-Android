@@ -4,15 +4,15 @@ package com.scv.slackgo.activities;
  * Created by ayelen@scvsoft.com
  */
 
-    import android.app.Activity;
-    import android.view.LayoutInflater;
-    import android.view.View;
-    import android.view.ViewGroup;
-    import android.widget.ArrayAdapter;
-    import android.widget.ImageView;
-    import android.widget.TextView;
+import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-    import com.scv.slackgo.R;
+import com.scv.slackgo.R;
 
 public class CustomList extends ArrayAdapter<String>{
 

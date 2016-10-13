@@ -15,12 +15,10 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.scv.slackgo.R;
+import com.scv.slackgo.helpers.Constants;
 
 import java.io.InputStream;
 
-/**
- * Created by ayelen@scvsoft.com .
- */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView slackButton;
@@ -30,19 +28,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        slackButton = (ImageView) findViewById(R.id.slackButton);
-        String slackLink = getString(R.string.slack_image_link);
-        new DownloadImageTask(slackButton).execute(slackLink);
-        slackButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Uri slackUri = Uri.parse(String.format(getString(R.string.slack_link),
-                        getString(R.string.slack_scope), getString(R.string.client_id), getString(R.string.redirect_oauth)));
+        String slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
 
-                Intent intent = new Intent(Intent.ACTION_VIEW,slackUri);
+        if(slackCode == null) {
 
-                startActivity(intent);
-            }
-        });
+            slackButton = (ImageView) findViewById(R.id.slackButton);
+            String slackLink = getString(R.string.slack_image_link);
+            new DownloadImageTask(slackButton).execute(slackLink);
+            slackButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Uri slackUri = Uri.parse(String.format(getString(R.string.slack_link),
+                            getString(R.string.slack_scope), getString(R.string.client_id), getString(R.string.redirect_oauth)));
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW, slackUri);
+
+                    startActivity(intent);
+                }
+            });
+        } else {
+            Intent detailsIntent = new Intent(this, DetailRegionActivity.class);
+
+            startActivity(detailsIntent);
+        }
     }
 
     @Override

@@ -70,7 +70,7 @@ public final class Constants {
     public static final float RADIUS_METERS = 60.0f;
     public static final String API_TOKEN= "api token";
     public static final String SELECTED_CHANNEL="selected channel";
-    public static final String SLACK_CODE= "slack code";
+    public static final String SLACK_TOKEN= "slack.token";
 
     public static final String SHARED_PREFERENCES_NAME = "slackgo.SHARED_PREFERENCES_NAME";
 

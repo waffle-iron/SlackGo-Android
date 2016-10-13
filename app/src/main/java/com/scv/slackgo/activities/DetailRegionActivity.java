@@ -15,8 +15,8 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.R;
+import com.scv.slackgo.helpers.Constants;
 
 import static com.scv.slackgo.R.id.channel_map;
 
@@ -37,14 +37,8 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_region);
 
-        if (getIntent().getData() != null) {
-            slackCode = getIntent().getData().getQueryParameters("code").get(0);
-        }
-        else {
-            slackCode = getIntent().getStringExtra(Constants.SLACK_CODE);
-        }
+        slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
 
-        //queue = Volley.newRequestQueue(this);
         SupportMapFragment mapFragment = new SupportMapFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(channel_map, mapFragment);
