@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.R;
+import com.scv.slackgo.services.SlackApiService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,18 +32,14 @@ import java.util.Set;
 public class RegionsActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     ArrayAdapter channelsAdapter;
+    SlackApiService slackService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regions_list);
 
-        Set<String> channels = setupChannels();
-
-        Integer[] imageId = {
-                R.drawable.arrow
-
-        };
+        slackService = new SlackApiService(this);
 
         // Create a progress bar to display while the list loads
         ProgressBar progressBar = new ProgressBar(this);
@@ -54,6 +51,29 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
         // Must add the progress bar to the root of the layout
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         root.addView(progressBar);
+
+        setAdapter();
+
+        String slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
+
+        if(slackCode == null) {
+
+            String code = getIntent().getData().getQueryParameters("code").get(0);
+            slackService.getSlackToken(String.format(getString(R.string.slack_token_link),
+                    getString(R.string.client_id), getString(R.string.client_secret), code, getString(R.string.redirect_oauth)));
+
+        }
+
+        getLoaderManager().destroyLoader(0);
+    }
+
+    private void setAdapter() {
+        Set<String> channels = setupChannels();
+
+        Integer[] imageId = {
+                R.drawable.arrow
+
+        };
 
         channelsAdapter = new CustomList(this, channels.toArray(new String[channels.size()]), imageId);
 
@@ -69,17 +89,6 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
         getListView().addHeaderView(titleview);
 
         setListAdapter(channelsAdapter);
-
-        /*Button addButton = (Button) findViewById(R.id.addItem);
-        addButton.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                channelsAdapter.notifyDataSetChanged();
-            }
-        });
-        */
-
-        getLoaderManager().destroyLoader(0);
     }
 
     private Set<String> setupChannels() {
@@ -130,14 +139,6 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
 
         Intent channelDetailsIntent = new Intent(this, DetailRegionActivity.class);
         channelDetailsIntent.putExtra(Constants.SELECTED_CHANNEL, channelName);
-
-        String slackCode = getIntent().getStringExtra(Constants.SLACK_CODE);
-
-        if(slackCode != null) {
-            channelDetailsIntent.putExtra(Constants.SLACK_CODE, slackCode);
-        } else {
-            channelDetailsIntent.putExtra(Constants.SLACK_CODE, getIntent().getData().getQueryParameters("code").get(0));
-        }
 
         startActivity(channelDetailsIntent);
     }

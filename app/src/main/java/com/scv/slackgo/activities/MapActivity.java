@@ -76,14 +76,11 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         }
 
 
-        if(getIntent().getData() != null) {
-            slackCode = getIntent().getData().getQueryParameters("code").get(0);
-        } else {
-            slackCode = getIntent().getStringExtra(Constants.SLACK_CODE);
-        }
         mGeofenceList = new ArrayList<Geofence>();
         mGeofencePendingIntent = null;
         mSharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE);
+
+        slackCode = mSharedPreferences.getString(Constants.SLACK_TOKEN, null);
 
         populateGeofenceList();
         buildGoogleApiClient();
@@ -286,7 +283,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     }
     public void backToList(View view) {
         Intent listActivity = new Intent(this, RegionsActivity.class);
-        listActivity.putExtra(Constants.SLACK_CODE, slackCode);
+        listActivity.putExtra(Constants.SLACK_TOKEN, slackCode);
         startActivity(listActivity);
 
     }

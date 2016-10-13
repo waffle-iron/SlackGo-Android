@@ -37,12 +37,7 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_region);
 
-        if (getIntent().getData() != null) {
-            slackCode = getIntent().getData().getQueryParameters("code").get(0);
-        }
-        else {
-            slackCode = getIntent().getStringExtra(Constants.SLACK_CODE);
-        }
+        slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
 
         //queue = Volley.newRequestQueue(this);
         SupportMapFragment mapFragment = new SupportMapFragment();
