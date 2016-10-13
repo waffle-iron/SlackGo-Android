@@ -1,6 +1,5 @@
 package com.scv.slackgo.activities;
 
-
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.LoaderManager;
@@ -21,6 +20,8 @@ import android.widget.TextView;
 
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
+import com.scv.slackgo.helpers.SlackGoApplication;
+import com.scv.slackgo.models.Region;
 import com.scv.slackgo.services.SlackApiService;
 
 import java.util.HashSet;
@@ -31,20 +32,19 @@ import java.util.Set;
  */
 public class RegionsActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    ArrayAdapter channelsAdapter;
+
+    ArrayAdapter regionsAdapter;
     SlackApiService slackService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regions_list);
-
         slackService = new SlackApiService(this);
 
         // Create a progress bar to display while the list loads
         ProgressBar progressBar = new ProgressBar(this);
-        progressBar.setLayoutParams(new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT,
-                ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+        progressBar.setLayoutParams(new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
         progressBar.setIndeterminate(true);
         getListView().setEmptyView(progressBar);
 
@@ -68,14 +68,14 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
     }
 
     private void setAdapter() {
-        Set<String> channels = setupChannels();
+        Set<String> regions = setupRegions();
 
-        Integer[] imageId = {
-                R.drawable.arrow
+        Integer[] imageId = {R.drawable.arrow
 
         };
 
-        channelsAdapter = new CustomList(this, channels.toArray(new String[channels.size()]), imageId);
+        regionsAdapter = new CustomList(this, regions.toArray(new String[regions.size()]), imageId);
+
 
         getLoaderManager().initLoader(0, null, this);
 
@@ -85,33 +85,33 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
         titleview.setTextColor(Color.parseColor("#FFFFFF"));
         titleview.setBackgroundColor(Color.parseColor("#1db08f"));
 
-
         getListView().addHeaderView(titleview);
-
-        setListAdapter(channelsAdapter);
+        setListAdapter(regionsAdapter);
     }
 
-    private Set<String> setupChannels() {
-        SharedPreferences channels = this.getSharedPreferences(
-                getString(R.string.channels_list), Context.MODE_PRIVATE);
+    private Set<String> setupRegions() {
+        SharedPreferences regions = this.getSharedPreferences(getString(R.string.preferences_regions_list), Context.MODE_PRIVATE);
 
-        if (channels == null || channels.getAll().size() == 0) {
+        //TODO this has to be changed later. Now is just to have a region for the list.
+        if (regions == null || regions.getAll().size() == 0) {
             SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
 
-            Set<String> channelsList = new HashSet<String>();
-            channelsList.add(Constants.OFFICE_CHANNEL);
+            //Saving in context the mock region
+            Region mockedRegion = Region.getMockRegion();
+            SlackGoApplication app = (SlackGoApplication) getApplicationContext();
+            app.setRegion(mockedRegion);
 
-
-            editor.putStringSet(getString(R.string.channels_list), channelsList);
-            editor.putFloat(Constants.OFFICE_CHANNEL + getString(R.string.channel_lat_sufix), Constants.SCV_OFFICE_LAT);
-            editor.putFloat(Constants.OFFICE_CHANNEL + getString(R.string.channel_long_sufix), Constants.SCV_OFFICE_LONG);
+            Set<String> preferencesRegionsList = new HashSet<String>();
+            preferencesRegionsList.add(mockedRegion.getName());
+            editor.putStringSet(getString(R.string.preferences_regions_list), preferencesRegionsList);
+            editor.putFloat(mockedRegion.getName() + getString(R.string.region_lat_sufix), mockedRegion.getLatitude());
+            editor.putFloat(mockedRegion.getName() + getString(R.string.region_long_sufix), mockedRegion.getLongitude());
             editor.commit();
 
-            return channelsList;
+            return preferencesRegionsList;
         }
-
-        return this.getPreferences(Context.MODE_PRIVATE).getStringSet(getString(R.string.channels_list), new HashSet<String>());
+        return this.getPreferences(Context.MODE_PRIVATE).getStringSet(getString(R.string.preferences_regions_list), new HashSet<String>());
     }
 
     @Override
@@ -121,7 +121,6 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
 
     }
 
@@ -135,11 +134,11 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
 
         super.onListItemClick(l, v, position, id);
 
-        String channelName = l.getItemAtPosition(position).toString();
+        String regionName = l.getItemAtPosition(position).toString();
 
-        Intent channelDetailsIntent = new Intent(this, DetailRegionActivity.class);
-        channelDetailsIntent.putExtra(Constants.SELECTED_CHANNEL, channelName);
+        Intent regionDetailsIntent = new Intent(this, DetailRegionActivity.class);
+        regionDetailsIntent.putExtra(Constants.SELECTED_CHANNEL, regionName);
 
-        startActivity(channelDetailsIntent);
+        startActivity(regionDetailsIntent);
     }
 }

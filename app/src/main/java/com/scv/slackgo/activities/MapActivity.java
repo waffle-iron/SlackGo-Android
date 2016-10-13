@@ -34,11 +34,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.GeofenceErrorMessages;
+import com.scv.slackgo.models.Region;
 import com.scv.slackgo.services.GeofenceTransitionsIntentService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.attr.name;
 import static com.scv.slackgo.R.id.office_map;
 
 /**
@@ -128,25 +130,25 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Region mockRegion = Region.getMockRegion();
 
-        LatLng officePosition = new LatLng(Constants.SCV_OFFICE_LAT, Constants.SCV_OFFICE_LONG);
+        LatLng officePosition = new LatLng(mockRegion.getLatitude(), mockRegion.getLongitude());
 
         MarkerOptions markerOptions = new MarkerOptions();
 
         markerOptions.position(officePosition);
         markerOptions.draggable(false);
-        markerOptions.title(Constants.OFFICE);
+        markerOptions.title(mockRegion.getName());
 
         CircleOptions circleOptions = new CircleOptions();
-
         circleOptions.center(officePosition);
-        circleOptions.radius(100);
+        circleOptions.radius(mockRegion.getRadius());
         circleOptions.strokeColor(Color.argb(200, 255, 0, 255));
         circleOptions.fillColor(Color.argb(25, 255, 0, 255));
 
         googleMap.addMarker(markerOptions);
         googleMap.addCircle(circleOptions);
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, 15.0f));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, mockRegion.getCameraZoom()));
         map = googleMap;
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){

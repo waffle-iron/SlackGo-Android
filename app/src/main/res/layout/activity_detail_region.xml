@@ -25,6 +25,7 @@
             android:orientation="vertical">
 
             <EditText
+                android:id="@+id/region_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="@string/region_hint"/>
@@ -42,7 +43,7 @@
                     android:progress="10"/>
 
                 <TextView
-                    android:id="@+id/region_value"
+                    android:id="@+id/region_radius_value"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"/>
 
