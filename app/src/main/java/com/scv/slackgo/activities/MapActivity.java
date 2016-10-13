@@ -16,8 +16,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -55,7 +53,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     private LocationRequest mLocationRequest;
     //private String apiToken;
     private String slackCode;
-    RequestQueue queue;
 
     //private PendingIntent mGeofenceRequestIntent;
     private PendingIntent mGeofencePendingIntent;
@@ -85,7 +82,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         populateGeofenceList();
         buildGoogleApiClient();
 
-        queue = Volley.newRequestQueue(this);
         SupportMapFragment mapFragment = new SupportMapFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(office_map, mapFragment);

@@ -39,7 +39,6 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
 
         slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
 
-        //queue = Volley.newRequestQueue(this);
         SupportMapFragment mapFragment = new SupportMapFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(channel_map, mapFragment);
