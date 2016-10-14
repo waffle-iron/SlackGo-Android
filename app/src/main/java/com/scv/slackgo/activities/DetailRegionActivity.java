@@ -8,6 +8,9 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,7 +30,7 @@ import static com.scv.slackgo.R.id.channel_map;
  * Created by kado on 10/11/16.
  */
 
-public class DetailRegionActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class DetailRegionActivity extends AppCompatActivity implements OnMapReadyCallback, PlaceSelectionListener, GoogleMap.OnMapClickListener {
 
     private String slackCode;
     private SeekBar regionSeekBar;
@@ -46,9 +49,16 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
         SlackGoApplication app = (SlackGoApplication) getApplicationContext();
         region = app.getRegion();
 
+        // Retrieve the PlaceAutocompleteFragment.
+       // PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+       //         getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+       // autocompleteFragment.setOnPlaceSelectedListener(this);
+
         SupportMapFragment mapFragment = new SupportMapFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(channel_map, mapFragment);
+
         fragmentTransaction.commit();
         mapFragment.getMapAsync(this);
 
@@ -96,8 +106,13 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setCompassEnabled(true);
+       // if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+        //}
+        //googleMap.setMyLocationEnabled(true);
 
         LatLng officePosition = new LatLng(region.getLatitude(), region.getLongitude());
 
@@ -113,5 +128,20 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
 
         googleMap.addMarker(markerOptions);
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, region.getCameraZoom()));
+    }
+
+    @Override
+    public void onPlaceSelected(Place place) {
+
+    }
+
+    @Override
+    public void onError(Status status) {
+
+    }
+
+    @Override
+    public void onMapClick(LatLng point) {
+        this.googleMap.addMarker(new MarkerOptions().position(point));
     }
 }

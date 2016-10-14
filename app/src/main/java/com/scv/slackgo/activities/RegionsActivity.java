@@ -70,12 +70,9 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
     private void setAdapter() {
         Set<String> regions = setupRegions();
 
-        Integer[] imageId = {R.drawable.arrow
-
-        };
+        Integer[] imageId = {R.drawable.arrow};
 
         regionsAdapter = new CustomList(this, regions.toArray(new String[regions.size()]), imageId);
-
 
         getLoaderManager().initLoader(0, null, this);
 
@@ -84,7 +81,6 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
         titleview.setTextSize(30f);
         titleview.setTextColor(Color.parseColor("#FFFFFF"));
         titleview.setBackgroundColor(Color.parseColor("#1db08f"));
-
         getListView().addHeaderView(titleview);
         setListAdapter(regionsAdapter);
     }

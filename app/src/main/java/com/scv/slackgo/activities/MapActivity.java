@@ -40,8 +40,7 @@ import com.scv.slackgo.services.GeofenceTransitionsIntentService;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.R.attr.name;
-import static com.scv.slackgo.R.id.office_map;
+import static com.scv.slackgo.R.id.channel_map;
 
 /**
  * Created by ayelen@scvsoft.com .
@@ -86,7 +85,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
         SupportMapFragment mapFragment = new SupportMapFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(office_map, mapFragment);
+        fragmentTransaction.replace(channel_map, mapFragment);
         fragmentTransaction.commit();
         mapFragment.getMapAsync(this);
 
