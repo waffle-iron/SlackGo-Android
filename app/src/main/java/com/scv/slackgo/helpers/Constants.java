@@ -64,7 +64,7 @@ public final class Constants {
     public static final long FASTEST_INTERVAL = 2000; /* 2 sec */
     public static final String OFFICE = "Office";
     public static final int RC_ASK_PERMISSIONS = 123;
-    public static final String TAG = "MapActivity";
+    public static final String TAG = "GeoFenceActivity";
     public static final String OFFICE_CHANNEL= "oficina";
     public static final String ASK_LOCATION= "Please active your location";
     public static final float RADIUS_METERS = 60.0f;

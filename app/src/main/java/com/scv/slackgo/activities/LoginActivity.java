@@ -19,18 +19,18 @@ import com.scv.slackgo.helpers.Constants;
 
 import java.io.InputStream;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView slackButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         String slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
 
-        if(slackCode == null) {
+        if (slackCode == null) {
 
             slackButton = (ImageView) findViewById(R.id.slackButton);
             String slackLink = getString(R.string.slack_image_link);
@@ -46,7 +46,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             });
         } else {
-            Intent detailsIntent = new Intent(this, DetailRegionActivity.class);
+
+            //TODO If we have regions, go to RegionsActivity else go to DetailRegionActivity
+
+            Intent detailsIntent = new Intent(this, RegionsActivity.class);
 
             startActivity(detailsIntent);
         }

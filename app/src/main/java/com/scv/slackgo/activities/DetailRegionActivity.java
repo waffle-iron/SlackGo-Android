@@ -2,16 +2,12 @@ package com.scv.slackgo.activities;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -21,13 +17,11 @@ import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.SlackGoApplication;
 import com.scv.slackgo.models.Region;
 
-import static com.scv.slackgo.R.id.channel_map;
-
 /**
  * Created by kado on 10/11/16.
  */
 
-public class DetailRegionActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class DetailRegionActivity extends MapActivity {
 
     private String slackCode;
     private SeekBar regionSeekBar;
@@ -40,23 +34,16 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_region);
 
         slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
         SlackGoApplication app = (SlackGoApplication) getApplicationContext();
         region = app.getRegion();
 
-        SupportMapFragment mapFragment = new SupportMapFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(channel_map, mapFragment);
-        fragmentTransaction.commit();
-        mapFragment.getMapAsync(this);
-
         regionSeekBar = (SeekBar) findViewById(R.id.region_seek_bar);
         regionValue = (TextView) findViewById(R.id.region_radius_value);
         regionName = (EditText) findViewById(R.id.region_name);
-
         regionSeekBar.setMax(100);
+
         if (region != null) {
             regionName.setText(region.getName());
             regionSeekBar.setProgress((int) region.getRadius() / 10);
@@ -92,6 +79,11 @@ public class DetailRegionActivity extends AppCompatActivity implements OnMapRead
             }
         });
 
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_detail_region;
     }
 
     @Override

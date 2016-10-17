@@ -1,58 +1,66 @@
 package com.scv.slackgo.activities;
 
-import android.app.ActionBar;
-import android.app.ListActivity;
-import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.SlackGoApplication;
 import com.scv.slackgo.models.Region;
 import com.scv.slackgo.services.SlackApiService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Created by ayelen@scvsoft.com.
  */
-public class RegionsActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class RegionsActivity extends MapActivity {
 
 
     ArrayAdapter regionsAdapter;
     SlackApiService slackService;
+    private Circle circle;
+    ListView listView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_regions_list);
+
         slackService = new SlackApiService(this);
 
-        // Create a progress bar to display while the list loads
-        ProgressBar progressBar = new ProgressBar(this);
-        progressBar.setLayoutParams(new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
-        progressBar.setIndeterminate(true);
-        getListView().setEmptyView(progressBar);
 
-        // Must add the progress bar to the root of the layout
-        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
-        root.addView(progressBar);
+        listView = (ListView) findViewById(R.id.list);
 
-        setAdapter();
+        listView.setAdapter(getAdapter());
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String regionName = (String) listView.getItemAtPosition(position);
+                Intent regionDetailsIntent = new Intent(RegionsActivity.this, DetailRegionActivity.class);
+                regionDetailsIntent.putExtra(Constants.SELECTED_CHANNEL, regionName);
+                startActivity(regionDetailsIntent);
+
+            }
+        });
+
 
         String slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
 
@@ -67,29 +75,13 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
         getLoaderManager().destroyLoader(0);
     }
 
-    private void setAdapter() {
-        Set<String> regions = setupRegions();
-
-        Integer[] imageId = {R.drawable.arrow
-
-        };
-
-        regionsAdapter = new CustomList(this, regions.toArray(new String[regions.size()]), imageId);
-
-
-        getLoaderManager().initLoader(0, null, this);
-
-        TextView titleview = new TextView(this);
-        titleview.setText(R.string.regions_title);
-        titleview.setTextSize(30f);
-        titleview.setTextColor(Color.parseColor("#FFFFFF"));
-        titleview.setBackgroundColor(Color.parseColor("#1db08f"));
-
-        getListView().addHeaderView(titleview);
-        setListAdapter(regionsAdapter);
+    private ArrayAdapter<String> getAdapter() {
+        ArrayList<String> regions = setupRegions();
+        return new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, regions);
     }
 
-    private Set<String> setupRegions() {
+    private ArrayList<String> setupRegions() {
         SharedPreferences regions = this.getSharedPreferences(getString(R.string.preferences_regions_list), Context.MODE_PRIVATE);
 
         //TODO this has to be changed later. Now is just to have a region for the list.
@@ -102,43 +94,40 @@ public class RegionsActivity extends ListActivity implements LoaderManager.Loade
             SlackGoApplication app = (SlackGoApplication) getApplicationContext();
             app.setRegion(mockedRegion);
 
-            Set<String> preferencesRegionsList = new HashSet<String>();
+            ArrayList<String> preferencesRegionsList = new ArrayList<String>();
             preferencesRegionsList.add(mockedRegion.getName());
-            editor.putStringSet(getString(R.string.preferences_regions_list), preferencesRegionsList);
-            editor.putFloat(mockedRegion.getName() + getString(R.string.region_lat_sufix), mockedRegion.getLatitude());
-            editor.putFloat(mockedRegion.getName() + getString(R.string.region_long_sufix), mockedRegion.getLongitude());
-            editor.commit();
-
             return preferencesRegionsList;
         }
-        return this.getPreferences(Context.MODE_PRIVATE).getStringSet(getString(R.string.preferences_regions_list), new HashSet<String>());
+
+        Set<String> setOfRegions = this.getPreferences(Context.MODE_PRIVATE).getStringSet(getString(R.string.preferences_regions_list), new HashSet<String>());
+        return (ArrayList<String>) Arrays.asList(setOfRegions.toArray(new String[0]));
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
+    public int getLayoutId() {
+        return R.layout.activity_regions_list;
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onMapReady(GoogleMap googleMap) {
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.getUiSettings().setCompassEnabled(true);
 
-    }
+        Region region = Region.getMockRegion();
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+        LatLng officePosition = new LatLng(region.getLatitude(), region.getLongitude());
 
-    }
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(officePosition);
+        markerOptions.draggable(false);
+        markerOptions.title(region.getName());
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
+        circle = googleMap.addCircle(new CircleOptions().center(officePosition)
+                .radius(region.getRadius())
+                .strokeColor(Color.argb(200, 255, 0, 255))
+                .fillColor(Color.argb(25, 255, 0, 255)));
 
-        super.onListItemClick(l, v, position, id);
-
-        String regionName = l.getItemAtPosition(position).toString();
-
-        Intent regionDetailsIntent = new Intent(this, DetailRegionActivity.class);
-        regionDetailsIntent.putExtra(Constants.SELECTED_CHANNEL, regionName);
-
-        startActivity(regionDetailsIntent);
+        googleMap.addMarker(markerOptions);
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, region.getCameraZoom()));
     }
 }
