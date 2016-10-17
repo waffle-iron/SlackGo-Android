@@ -1,5 +1,7 @@
 package com.scv.slackgo.activities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -16,6 +18,9 @@ import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.SlackGoApplication;
 import com.scv.slackgo.models.Region;
+import com.scv.slackgo.services.SlackApiService;
+
+import java.util.HashSet;
 
 /**
  * Created by kado on 10/11/16.
@@ -28,14 +33,14 @@ public class DetailRegionActivity extends MapActivity {
     private TextView regionValue;
     private EditText regionName;
     private Circle circle;
-    private GoogleMap googleMap;
     private Region region;
+    SlackApiService slackService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        slackService = new SlackApiService(this);
 
-        slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
         SlackGoApplication app = (SlackGoApplication) getApplicationContext();
         region = app.getRegion();
 
@@ -49,8 +54,8 @@ public class DetailRegionActivity extends MapActivity {
             regionSeekBar.setProgress((int) region.getRadius() / 10);
             regionValue.setText(String.valueOf(region.getRadius() * 10));
         } else {
-            regionSeekBar.setProgress(10);
-            regionValue.setText(10 * 10);
+            regionSeekBar.setProgress(0);
+            regionValue.setText(String.valueOf(0));
         }
 
         regionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -79,6 +84,31 @@ public class DetailRegionActivity extends MapActivity {
             }
         });
 
+        String slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
+
+        if (slackCode == null) {
+
+            String code = getIntent().getData().getQueryParameters("code").get(0);
+            slackService.getSlackToken(String.format(getString(R.string.slack_token_link),
+                    getString(R.string.client_id), getString(R.string.client_secret), code, getString(R.string.redirect_oauth)));
+
+
+            //Getting mock region
+            Region mockedRegion = Region.getMockRegion();
+
+            //TODO when save button added, replace this for the real region
+            HashSet<String> regionsHashSet = new HashSet<String>();
+            regionsHashSet.add(mockedRegion.getName());
+
+
+            //TODO when saving the real region remove clear.
+            SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.putStringSet(getString(R.string.preferences_regions_list), regionsHashSet);
+            editor.commit();
+        }
+
     }
 
     @Override
@@ -91,19 +121,25 @@ public class DetailRegionActivity extends MapActivity {
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setCompassEnabled(true);
 
-        LatLng officePosition = new LatLng(region.getLatitude(), region.getLongitude());
+        if (region != null) {
+            LatLng officePosition = new LatLng(region.getLatitude(), region.getLongitude());
 
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(officePosition);
-        markerOptions.draggable(false);
-        markerOptions.title(region.getName());
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(officePosition);
+            markerOptions.draggable(false);
+            markerOptions.title(region.getName());
 
-        circle = googleMap.addCircle(new CircleOptions().center(officePosition)
-                .radius(region.getRadius())
-                .strokeColor(Color.argb(200, 255, 0, 255))
-                .fillColor(Color.argb(25, 255, 0, 255)));
+            circle = googleMap.addCircle(new CircleOptions().center(officePosition)
+                    .radius(region.getRadius())
+                    .strokeColor(Color.argb(200, 255, 0, 255))
+                    .fillColor(Color.argb(25, 255, 0, 255)));
 
-        googleMap.addMarker(markerOptions);
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, region.getCameraZoom()));
+            googleMap.addMarker(markerOptions);
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, region.getCameraZoom()));
+        } else {
+            Region officeRegion = Region.getMockRegion();
+            LatLng officePosition = new LatLng(officeRegion.getLatitude(), officeRegion.getLongitude());
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, officeRegion.getCameraZoom()));
+        }
     }
 }

@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
+import com.scv.slackgo.helpers.Preferences;
 
 import java.io.InputStream;
 
@@ -47,11 +48,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             });
         } else {
 
-            //TODO If we have regions, go to RegionsActivity else go to DetailRegionActivity
+            Intent nextIntent;
+            if (Preferences.areRegionsEmpty(this, getString(R.string.preferences_regions_list))) {
+                nextIntent = new Intent(this, DetailRegionActivity.class);
+            } else {
+                nextIntent = new Intent(this, RegionsActivity.class);
+            }
 
-            Intent detailsIntent = new Intent(this, RegionsActivity.class);
-
-            startActivity(detailsIntent);
+            startActivity(nextIntent);
         }
     }
 
