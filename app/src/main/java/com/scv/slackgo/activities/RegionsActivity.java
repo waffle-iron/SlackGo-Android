@@ -1,13 +1,13 @@
 package com.scv.slackgo.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -16,6 +16,7 @@ import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.Preferences;
 import com.scv.slackgo.models.Region;
+import com.scv.slackgo.services.SlackApiService;
 
 import java.util.ArrayList;
 
@@ -25,6 +26,7 @@ import java.util.ArrayList;
  */
 public class RegionsActivity extends MapActivity {
 
+    SlackApiService slackService;
     ListView listView;
     ArrayList<Region> regionsList = new ArrayList<Region>();
 
@@ -42,6 +44,10 @@ public class RegionsActivity extends MapActivity {
 
         regionsList = Preferences.getRegionsList(this);
 
+        setListView();
+    }
+
+    private void setListView() {
         listView = (ListView) findViewById(R.id.list);
 
         listView.setAdapter(getAdapter());
@@ -62,7 +68,6 @@ public class RegionsActivity extends MapActivity {
                 startActivity(regionDetailsIntent);
             }
         });
-
     }
 
     private ArrayAdapter<String> getAdapter() {
@@ -90,18 +95,12 @@ public class RegionsActivity extends MapActivity {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.getUiSettings().setZoomControlsEnabled(true);
-        googleMap.getUiSettings().setCompassEnabled(true);
+        super.onMapReady(googleMap);
+        this.googleMap.getUiSettings().setZoomControlsEnabled(true);
+        this.googleMap.getUiSettings().setCompassEnabled(true);
 
         Region officeRegion = Region.getMockRegion();
 
-        LatLng officePosition = new LatLng(officeRegion.getLatitude(), officeRegion.getLongitude());
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(officePosition);
-        markerOptions.draggable(false);
-        markerOptions.title(officeRegion.getName());
-
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, officeRegion.getCameraZoom()));
+        this.setMarker(officeRegion);
     }
 }

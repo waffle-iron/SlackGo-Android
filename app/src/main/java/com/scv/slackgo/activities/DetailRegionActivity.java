@@ -5,11 +5,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Circle;
@@ -40,7 +45,6 @@ public class DetailRegionActivity extends MapActivity {
     private EditText regionName;
     private Button addRegionButton;
     private Button delRegionButton;
-    private Circle circle;
     private Region region;
     private ArrayList<Region> regionsList;
     SlackApiService slackService;
@@ -84,14 +88,10 @@ public class DetailRegionActivity extends MapActivity {
         regionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -136,6 +136,7 @@ public class DetailRegionActivity extends MapActivity {
         });
 
         String slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
+
         if (slackCode == null) {
 
             String code = getIntent().getData().getQueryParameters("code").get(0);
@@ -146,6 +147,21 @@ public class DetailRegionActivity extends MapActivity {
             //Getting mock region;
             Preferences.addRegionToSharedPreferences(this, Region.getMockRegion());
         }
+
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                setMarker(new Region(place.getLatLng()));
+            }
+
+            @Override
+            public void onError(Status status) {
+                Log.i("map", "An error occurred: " + status);
+            }
+        });
 
     }
 
@@ -161,6 +177,7 @@ public class DetailRegionActivity extends MapActivity {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        super.onMapReady(googleMap);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setCompassEnabled(true);
 
