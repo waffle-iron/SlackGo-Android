@@ -47,14 +47,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
             });
         } else {
-
             Intent nextIntent;
-            if (Preferences.areRegionsEmpty(this, getString(R.string.preferences_regions_list))) {
+            if (Preferences.areRegionsEmpty(this)) {
                 nextIntent = new Intent(this, DetailRegionActivity.class);
             } else {
                 nextIntent = new Intent(this, RegionsActivity.class);
             }
-
             startActivity(nextIntent);
         }
     }

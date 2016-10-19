@@ -11,12 +11,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 import com.scv.slackgo.R;
+import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.Preferences;
-import com.scv.slackgo.helpers.SlackGoApplication;
 import com.scv.slackgo.models.Region;
 
 import java.util.ArrayList;
+
 
 /**
  * Created by ayelen@scvsoft.com.
@@ -24,11 +26,21 @@ import java.util.ArrayList;
 public class RegionsActivity extends MapActivity {
 
     ListView listView;
+    ArrayList<Region> regionsList = new ArrayList<Region>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getLoaderManager().destroyLoader(0);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        regionsList = Preferences.getRegionsList(this);
 
         listView = (ListView) findViewById(R.id.list);
 
@@ -37,17 +49,20 @@ public class RegionsActivity extends MapActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //TODO bring region from name clicked.
-                SlackGoApplication app = (SlackGoApplication) getApplicationContext();
-                Region mockedRegion = Region.getMockRegion();
-                app.setRegion(mockedRegion);
+                Region regionClicked = regionsList.get(position);
+                Gson gson = new Gson();
+                String regionJson = gson.toJson(regionClicked);
+                String regionsListJson = gson.toJson(regionsList);
+
 
                 Intent regionDetailsIntent = new Intent(RegionsActivity.this, DetailRegionActivity.class);
+                regionDetailsIntent.putExtra(Constants.INTENT_REGION_CLICKED, regionJson);
+                regionDetailsIntent.putExtra(Constants.INTENT_REGIONS_LIST, regionsListJson);
+
                 startActivity(regionDetailsIntent);
             }
         });
 
-        getLoaderManager().destroyLoader(0);
     }
 
     private ArrayAdapter<String> getAdapter() {
@@ -57,7 +72,15 @@ public class RegionsActivity extends MapActivity {
     }
 
     private ArrayList<String> setupRegions() {
-        return Preferences.getRegionsNamesLists(this, getString(R.string.preferences_regions_list));
+        if (!Preferences.areRegionsEmpty(this)) {
+            ArrayList<String> regionNameList = new ArrayList<String>();
+            for (Region region : regionsList) {
+                regionNameList.add(region.getName());
+            }
+            return regionNameList;
+        } else {
+            return new ArrayList<String>();
+        }
     }
 
     @Override
