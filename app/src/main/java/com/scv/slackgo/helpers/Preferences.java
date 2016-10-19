@@ -59,7 +59,9 @@ public class Preferences {
             listOfRegions.addAll(getRegionsList(activity));
         }
         removeDataFromSharedPreferences(activity, Constants.SHARED_PREFERENCES_REGIONS);
-        listOfRegions.add(region);
+        if (!listOfRegions.contains(region)) {
+            listOfRegions.add(region);
+        }
         addRegionsListToSharedPreferences(activity, listOfRegions);
     }
 

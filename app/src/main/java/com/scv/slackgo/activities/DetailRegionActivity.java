@@ -3,9 +3,9 @@ package com.scv.slackgo.activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -17,7 +17,6 @@ import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -49,9 +48,15 @@ public class DetailRegionActivity extends MapActivity {
     private ArrayList<Region> regionsList;
     SlackApiService slackService;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         slackService = new SlackApiService(this);
 
@@ -145,7 +150,7 @@ public class DetailRegionActivity extends MapActivity {
 
 
             //Getting mock region;
-            Preferences.addRegionToSharedPreferences(this, Region.getMockRegion());
+            //Preferences.addRegionToSharedPreferences(this, Region.getMockRegion());
         }
 
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
@@ -206,10 +211,15 @@ public class DetailRegionActivity extends MapActivity {
     private boolean isValidRegion(Region region) {
 
         if (!Preferences.areRegionsEmpty(this)) {
-
-            for (Region regionInList : regionsList) {
-                if (region.getName().equals(regionInList.getName())) {
-                    return false;
+            //CASE first time logging in, intent has empty regionList
+            if (regionsList == null) {
+                return true;
+            }
+            else {
+                for (Region regionInList : regionsList) {
+                    if (region.getName().equals(regionInList.getName())) {
+                        return false;
+                    }
                 }
             }
         }
