@@ -77,5 +77,10 @@ public final class Constants {
 
     public static final String GEOFENCES_ADDED_KEY = PACKAGE_NAME + ".GEOFENCES_ADDED_KEY";
 
+    public static final String SHARED_PREFERENCES_REGIONS = "REGIONS_SHARED";
+
+    public static final String INTENT_REGION_CLICKED = "REGION_CLICKED";
+    public static final String INTENT_REGIONS_LIST = "REGION_LIST";
+
 
 }
