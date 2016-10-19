@@ -7,7 +7,7 @@
     <string name="signed_out">Signed out</string>
 
     <!--<string name="channels_list">channels</string>-->
-    <string name="preferences_regions_list">regions</string>
+    <string name="preferences_regions_list">locations</string>
 
     <string name="status">Ready</string>
 
@@ -57,6 +57,6 @@
     <string name="geofence_transition_notification_text">Click notification to return app</string>
 
 
-    <string name="region_hint">Region Name</string>
+    <string name="location_hint">Location Name</string>
 
 </resources>

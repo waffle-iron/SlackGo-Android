@@ -25,7 +25,7 @@ import com.google.gson.reflect.TypeToken;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.Preferences;
-import com.scv.slackgo.models.Region;
+import com.scv.slackgo.models.Location;
 import com.scv.slackgo.services.SlackApiService;
 
 import java.lang.reflect.Type;
@@ -36,16 +36,16 @@ import java.util.List;
  * Created by kado on 10/11/16.
  */
 
-public class DetailRegionActivity extends MapActivity {
+public class LocationActivity extends MapActivity {
 
     private String slackCode;
-    private SeekBar regionSeekBar;
-    private TextView regionValue;
-    private EditText regionName;
-    private Button addRegionButton;
-    private Button delRegionButton;
-    private Region region;
-    private ArrayList<Region> regionsList;
+    private SeekBar locationSeekBar;
+    private TextView locationValue;
+    private EditText locationName;
+    private Button addLocationButton;
+    private Button delLocationButton;
+    private Location location;
+    private ArrayList<Location> locationsList;
     SlackApiService slackService;
 
 
@@ -61,49 +61,50 @@ public class DetailRegionActivity extends MapActivity {
         slackService = new SlackApiService(this);
 
         Intent myIntent = getIntent();
-        String regionJSON = myIntent.getStringExtra(Constants.INTENT_REGION_CLICKED);
-        String regionsListJSON = myIntent.getStringExtra(Constants.INTENT_REGIONS_LIST);// will return "FirstKeyValue"
+        String locationJSON = myIntent.getStringExtra(Constants.INTENT_LOCATION_CLICKED);
+        String locationsListJSON = myIntent.getStringExtra(Constants.INTENT_LOCATION_LIST);// will return "FirstKeyValue"
 
         Gson gson = new Gson();
-
-        region = gson.fromJson(regionJSON, Region.class);
-
-        Type listOfRegionsObject = new TypeToken<List<Region>>() {
+        location = gson.fromJson(locationJSON, Location.class);
+        Type typeOfLocations = new TypeToken<List<Location>>() {
         }.getType();
-        regionsList = gson.fromJson(regionsListJSON, listOfRegionsObject);
+        locationsList = gson.fromJson(locationsListJSON, typeOfLocations);
 
-        regionSeekBar = (SeekBar) findViewById(R.id.region_seek_bar);
-        regionValue = (TextView) findViewById(R.id.region_radius_value);
-        regionName = (EditText) findViewById(R.id.region_name);
-        addRegionButton = (Button) findViewById(R.id.add_region_button);
-        delRegionButton = (Button) findViewById(R.id.del_region_button);
-        regionSeekBar.setMax(100);
 
-        if (region != null) {
-            regionName.setText(region.getName());
-            regionSeekBar.setProgress((int) region.getRadius() / 10);
-            regionValue.setText(String.valueOf(region.getRadius() * 10));
-            delRegionButton.setVisibility(View.VISIBLE);
+        locationSeekBar = (SeekBar) findViewById(R.id.location_seek_bar);
+        locationValue = (TextView) findViewById(R.id.location_radius_value);
+        locationName = (EditText) findViewById(R.id.location_name);
+        addLocationButton = (Button) findViewById(R.id.add_location_button);
+        delLocationButton = (Button) findViewById(R.id.del_location_button);
+        locationSeekBar.setMax(100);
+
+        if (location != null) {
+            locationName.setText(location.getName());
+            locationSeekBar.setProgress((int) location.getRadius() / 10);
+            locationValue.setText(String.valueOf(location.getRadius() * 10));
+            delLocationButton.setVisibility(View.VISIBLE);
         } else {
-            regionSeekBar.setProgress(0);
-            regionValue.setText(String.valueOf(0));
-            delRegionButton.setVisibility(View.GONE);
+            locationSeekBar.setProgress(0);
+            locationValue.setText(String.valueOf(0));
+            delLocationButton.setVisibility(View.GONE);
         }
 
-        regionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        locationSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    if (progress >= 0 && progress <= regionSeekBar.getMax()) {
+                    if (progress >= 0 && progress <= locationSeekBar.getMax()) {
                         String progressString = String.valueOf(progress * 10);
-                        regionValue.setText(progressString);
+                        locationValue.setText(progressString);
                         seekBar.setProgress(progress);
                         circle.setRadius(progress * 10);
                     }
@@ -112,29 +113,29 @@ public class DetailRegionActivity extends MapActivity {
         });
 
 
-        delRegionButton.setOnClickListener(new View.OnClickListener() {
+        delLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Preferences.deleteRegionFromListByName(DetailRegionActivity.this, regionName.getText().toString());
-                goToRegionsActivity();
+                Preferences.deleteLocationFromListByName(LocationActivity.this, locationName.getText().toString());
+                goToLocationActivity();
             }
         });
 
-        addRegionButton.setOnClickListener(new View.OnClickListener() {
+        addLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Region mocked = Region.getMockRegion();
+                Location mocked = Location.getSCVLocation();
                 ArrayList<String> channels = new ArrayList<String>();
                 channels.add("clubdelacomputadora");
-                Region newRegion = new Region(regionName.getText().toString(), mocked.getLatitude(),
+                Location newLocation = new Location(locationName.getText().toString(), mocked.getLatitude(),
                         mocked.getLongitude(), mocked.getRadius(),
                         mocked.getCameraZoom(), channels);
 
-                if (isValidRegion(newRegion)) {
-                    Preferences.addRegionToSharedPreferences(DetailRegionActivity.this, newRegion);
-                    goToRegionsActivity();
+                if (isValidLocation(newLocation)) {
+                    Preferences.addLocationToSharedPreferences(LocationActivity.this, newLocation);
+                    goToLocationActivity();
                 } else {
-                    Toast.makeText(DetailRegionActivity.this, "Region Incorrecta",
+                    Toast.makeText(LocationActivity.this, "Location Incorrecta",
                             Toast.LENGTH_LONG).show();
                 }
             }
@@ -149,8 +150,8 @@ public class DetailRegionActivity extends MapActivity {
                     getString(R.string.client_id), getString(R.string.client_secret), code, getString(R.string.redirect_oauth)));
 
 
-            //Getting mock region;
-            //Preferences.addRegionToSharedPreferences(this, Region.getMockRegion());
+            //Getting mock location;
+            //Preferences.addLocationToSharedPreferences(this, Location.getSCVLocation());
         }
 
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
@@ -159,7 +160,7 @@ public class DetailRegionActivity extends MapActivity {
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                setMarker(new Region(place.getLatLng()));
+                setMarker(new Location(place.getLatLng()));
             }
 
             @Override
@@ -170,14 +171,14 @@ public class DetailRegionActivity extends MapActivity {
 
     }
 
-    private void goToRegionsActivity() {
-        Intent regionsIntent = new Intent(DetailRegionActivity.this, RegionsActivity.class);
-        startActivity(regionsIntent);
+    private void goToLocationActivity() {
+        Intent locationsIntent = new Intent(LocationActivity.this, LocationsListActivity.class);
+        startActivity(locationsIntent);
     }
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_detail_region;
+        return R.layout.activity_location;
     }
 
     @Override
@@ -186,43 +187,37 @@ public class DetailRegionActivity extends MapActivity {
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setCompassEnabled(true);
 
-        if (region != null) {
-            LatLng officePosition = new LatLng(region.getLatitude(), region.getLongitude());
+        if (location != null) {
+            LatLng officePosition = new LatLng(location.getLatitude(), location.getLongitude());
 
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(officePosition);
             markerOptions.draggable(false);
-            markerOptions.title(region.getName());
+            markerOptions.title(location.getName());
 
             circle = googleMap.addCircle(new CircleOptions().center(officePosition)
-                    .radius(region.getRadius())
+                    .radius(location.getRadius())
                     .strokeColor(Color.argb(200, 255, 0, 255))
                     .fillColor(Color.argb(25, 255, 0, 255)));
 
             googleMap.addMarker(markerOptions);
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, region.getCameraZoom()));
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, location.getCameraZoom()));
         } else {
-            Region officeRegion = Region.getMockRegion();
-            LatLng officePosition = new LatLng(officeRegion.getLatitude(), officeRegion.getLongitude());
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, officeRegion.getCameraZoom()));
+            Location officeLocation = Location.getSCVLocation();
+            LatLng officePosition = new LatLng(officeLocation.getLatitude(), officeLocation.getLongitude());
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, officeLocation.getCameraZoom()));
         }
     }
 
-    private boolean isValidRegion(Region region) {
-
-        if (!Preferences.areRegionsEmpty(this)) {
-            //CASE first time logging in, intent has empty regionList
-            if (regionsList == null) {
-                return true;
-            }
-            else {
-                for (Region regionInList : regionsList) {
-                    if (region.getName().equals(regionInList.getName())) {
-                        return false;
-                    }
+    private boolean isValidLocation(Location location) {
+        boolean isValid = true;
+        if (locationsList != null) {
+            for (Location locationInList : locationsList) {
+                if (location.getName().equals(locationInList.getName())) {
+                    isValid = false;
                 }
             }
         }
-        return true;
+        return isValid;
     }
 }

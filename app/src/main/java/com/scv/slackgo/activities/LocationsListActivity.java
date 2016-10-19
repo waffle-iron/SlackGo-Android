@@ -1,7 +1,6 @@
 package com.scv.slackgo.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -9,13 +8,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.Preferences;
-import com.scv.slackgo.models.Region;
+import com.scv.slackgo.models.Location;
 import com.scv.slackgo.services.SlackApiService;
 
 import java.util.ArrayList;
@@ -24,11 +21,11 @@ import java.util.ArrayList;
 /**
  * Created by ayelen@scvsoft.com.
  */
-public class RegionsActivity extends MapActivity {
+public class LocationsListActivity extends MapActivity {
 
     SlackApiService slackService;
     ListView listView;
-    ArrayList<Region> regionsList = new ArrayList<Region>();
+    ArrayList<Location> locationsList = new ArrayList<Location>();
 
 
     @Override
@@ -42,7 +39,7 @@ public class RegionsActivity extends MapActivity {
     protected void onStart() {
         super.onStart();
 
-        regionsList = Preferences.getRegionsList(this);
+        locationsList = Preferences.getLocationsList(this);
 
         setListView();
     }
@@ -55,34 +52,34 @@ public class RegionsActivity extends MapActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Region regionClicked = regionsList.get(position);
+                Location locationClicked = locationsList.get(position);
                 Gson gson = new Gson();
-                String regionJson = gson.toJson(regionClicked);
-                String regionsListJson = gson.toJson(regionsList);
+                String locationJSON = gson.toJson(locationClicked);
+                String locationsListJSON = gson.toJson(locationsList);
 
 
-                Intent regionDetailsIntent = new Intent(RegionsActivity.this, DetailRegionActivity.class);
-                regionDetailsIntent.putExtra(Constants.INTENT_REGION_CLICKED, regionJson);
-                regionDetailsIntent.putExtra(Constants.INTENT_REGIONS_LIST, regionsListJson);
+                Intent locationIntent = new Intent(LocationsListActivity.this, LocationActivity.class);
+                locationIntent.putExtra(Constants.INTENT_LOCATION_CLICKED, locationJSON);
+                locationIntent.putExtra(Constants.INTENT_LOCATION_LIST, locationsListJSON);
 
-                startActivity(regionDetailsIntent);
+                startActivity(locationIntent);
             }
         });
     }
 
     private ArrayAdapter<String> getAdapter() {
-        ArrayList<String> regions = setupRegions();
+        ArrayList<String> locations = setupLocations();
         return new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, regions);
+                android.R.layout.simple_list_item_1, android.R.id.text1, locations);
     }
 
-    private ArrayList<String> setupRegions() {
-        if (!Preferences.areRegionsEmpty(this)) {
-            ArrayList<String> regionNameList = new ArrayList<String>();
-            for (Region region : regionsList) {
-                regionNameList.add(region.getName());
+    private ArrayList<String> setupLocations() {
+        if (!Preferences.isLocationsListEmpty(this)) {
+            ArrayList<String> locationNameList = new ArrayList<String>();
+            for (Location location : locationsList) {
+                locationNameList.add(location.getName());
             }
-            return regionNameList;
+            return locationNameList;
         } else {
             return new ArrayList<String>();
         }
@@ -90,7 +87,7 @@ public class RegionsActivity extends MapActivity {
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_regions_list;
+        return R.layout.activity_locations_list;
     }
 
     @Override
@@ -99,8 +96,8 @@ public class RegionsActivity extends MapActivity {
         this.googleMap.getUiSettings().setZoomControlsEnabled(true);
         this.googleMap.getUiSettings().setCompassEnabled(true);
 
-        Region officeRegion = Region.getMockRegion();
+        Location officeLocation = Location.getSCVLocation();
 
-        this.setMarker(officeRegion);
+        this.setMarker(officeLocation);
     }
 }

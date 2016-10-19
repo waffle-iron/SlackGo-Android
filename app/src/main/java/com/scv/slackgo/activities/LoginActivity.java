@@ -48,10 +48,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             });
         } else {
             Intent nextIntent;
-            if (Preferences.areRegionsEmpty(this)) {
-                nextIntent = new Intent(this, DetailRegionActivity.class);
+            if (Preferences.isLocationsListEmpty(this)) {
+                nextIntent = new Intent(this, LocationActivity.class);
             } else {
-                nextIntent = new Intent(this, RegionsActivity.class);
+                nextIntent = new Intent(this, LocationsListActivity.class);
             }
             startActivity(nextIntent);
         }

@@ -18,7 +18,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAEv7OX4I4AfKu_-PFCCltTKVxPFJGGTEQ"/>
+            android:value="mmm mmm"/>
 
         <uses-library android:name="com.google.android.maps" />
 
@@ -30,7 +30,7 @@
 
         </activity>
 
-        <activity android:name=".activities.RegionsActivity"
+        <activity android:name=".activities.LocationsListActivity"
             android:exported="true"
             android:launchMode="singleInstance">
         </activity>
@@ -47,7 +47,7 @@
 
         </activity>
 
-        <activity android:name=".activities.DetailRegionActivity"
+        <activity android:name=".activities.LocationActivity"
             android:exported="true"
             android:launchMode="singleInstance">
             <intent-filter>
