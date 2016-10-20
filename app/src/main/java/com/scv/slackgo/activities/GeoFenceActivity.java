@@ -34,7 +34,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.GeofenceErrorMessages;
-import com.scv.slackgo.models.Region;
+import com.scv.slackgo.models.Location;
 import com.scv.slackgo.services.GeofenceTransitionsIntentService;
 
 import java.util.ArrayList;
@@ -129,25 +129,25 @@ public class GeoFenceActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Region mockRegion = Region.getMockRegion();
+        Location mockLocation = Location.getSCVLocation();
 
-        LatLng officePosition = new LatLng(mockRegion.getLatitude(), mockRegion.getLongitude());
+        LatLng officePosition = new LatLng(mockLocation.getLatitude(), mockLocation.getLongitude());
 
         MarkerOptions markerOptions = new MarkerOptions();
 
         markerOptions.position(officePosition);
         markerOptions.draggable(false);
-        markerOptions.title(mockRegion.getName());
+        markerOptions.title(mockLocation.getName());
 
         CircleOptions circleOptions = new CircleOptions();
         circleOptions.center(officePosition);
-        circleOptions.radius(mockRegion.getRadius());
+        circleOptions.radius(mockLocation.getRadius());
         circleOptions.strokeColor(Color.argb(200, 255, 0, 255));
         circleOptions.fillColor(Color.argb(25, 255, 0, 255));
 
         googleMap.addMarker(markerOptions);
         googleMap.addCircle(circleOptions);
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, mockRegion.getCameraZoom()));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(officePosition, mockLocation.getCameraZoom()));
         map = googleMap;
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
@@ -279,7 +279,7 @@ public class GeoFenceActivity extends AppCompatActivity implements GoogleApiClie
                                   .build());
     }
     public void backToList(View view) {
-        Intent listActivity = new Intent(this, RegionsActivity.class);
+        Intent listActivity = new Intent(this, LocationsListActivity.class);
         listActivity.putExtra(Constants.SLACK_TOKEN, slackCode);
         startActivity(listActivity);
 

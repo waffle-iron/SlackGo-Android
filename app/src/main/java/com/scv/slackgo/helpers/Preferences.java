@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.scv.slackgo.models.Region;
+import com.scv.slackgo.models.Location;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -22,60 +22,71 @@ public class Preferences {
         SharedPreferences sharedPreferences = activity.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(keyToRemove);
-        editor.apply();
-    }
-
-    public static ArrayList<Region> getRegionsList(Activity activity) {
-        Gson gson = new Gson();
-        SharedPreferences sharedPreferences = activity.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        String regionsJSON = sharedPreferences.getString(Constants.SHARED_PREFERENCES_REGIONS, "");
-
-        Type listOfTestObject = new TypeToken<List<Region>>() {
-        }.getType();
-        ArrayList<Region> regions = gson.fromJson(regionsJSON, listOfTestObject);
-
-        return regions;
-    }
-
-    public static Boolean areRegionsEmpty(Activity activity) {
-        ArrayList<Region> regions = getRegionsList(activity);
-        return ((regions == null) || (regions.size() == 0));
-    }
-
-    private static void addRegionsListToSharedPreferences(Activity activity, ArrayList<Region> regions) {
-        Gson gson = new Gson();
-        String regionsJSON = gson.toJson(regions);
-
-        SharedPreferences sharedPreferences = activity.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.putString(Constants.SHARED_PREFERENCES_REGIONS, regionsJSON);
         editor.commit();
     }
 
-    public static void addRegionToSharedPreferences(Activity activity, Region region) {
-        ArrayList<Region> listOfRegions = new ArrayList<Region>();
-        if (!areRegionsEmpty(activity)) {
-            listOfRegions.addAll(getRegionsList(activity));
-        }
-        removeDataFromSharedPreferences(activity, Constants.SHARED_PREFERENCES_REGIONS);
-        listOfRegions.add(region);
-        addRegionsListToSharedPreferences(activity, listOfRegions);
+    public static ArrayList<Location> getLocationsList(Activity activity) {
+        Gson gson = new Gson();
+        SharedPreferences sharedPreferences = activity.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String locationsJSON = sharedPreferences.getString(Constants.SHARED_PREFERENCES_LOCATIONS, "");
+
+        Type listOfTestObject = new TypeToken<List<Location>>() {
+        }.getType();
+        ArrayList<Location> locations = gson.fromJson(locationsJSON, listOfTestObject);
+
+        return locations;
     }
 
-    public static void deleteRegionFromListByName(Activity activity, String regionName) {
-        ArrayList<Region> listOfRegions = getRegionsList(activity);
+    public static Boolean isLocationsListEmpty(Activity activity) {
+        ArrayList<Location> locations = getLocationsList(activity);
+        return ((locations == null) || (locations.size() == 0));
+    }
 
-        for (Region region : listOfRegions) {
-            if (region.getName().equals(regionName)) {
-                listOfRegions.remove(region);
+    private static void addLocationsListToSharedPreferences(Activity activity, ArrayList<Location> locations) {
+        Gson gson = new Gson();
+        String locationsJSON = gson.toJson(locations);
+
+        SharedPreferences sharedPreferences = activity.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(Constants.SHARED_PREFERENCES_LOCATIONS, locationsJSON);
+        editor.commit();
+    }
+
+    public static void addLocationToSharedPreferences(Activity activity, Location location) {
+        ArrayList<Location> listOfLocations = new ArrayList<Location>();
+        if (!isLocationsListEmpty(activity)) {
+            listOfLocations.addAll(getLocationsList(activity));
+        }
+        removeDataFromSharedPreferences(activity, Constants.SHARED_PREFERENCES_LOCATIONS);
+        if (!locationWithNameExistsInList(listOfLocations, location.getName())) {
+            listOfLocations.add(location);
+        }
+        addLocationsListToSharedPreferences(activity, listOfLocations);
+    }
+
+    public static void deleteLocationFromListByName(Activity activity, String locationName) {
+        ArrayList<Location> listOfLocations = getLocationsList(activity);
+
+        for (Location location : listOfLocations) {
+            if (location.getName().equals(locationName)) {
+                listOfLocations.remove(location);
             }
         }
 
-        removeDataFromSharedPreferences(activity, Constants.SHARED_PREFERENCES_REGIONS);
-        if (listOfRegions.size() > 0) {
-            addRegionsListToSharedPreferences(activity, listOfRegions);
+        removeDataFromSharedPreferences(activity, Constants.SHARED_PREFERENCES_LOCATIONS);
+        if (listOfLocations.size() > 0) {
+            addLocationsListToSharedPreferences(activity, listOfLocations);
         }
+    }
+
+
+    private static boolean locationWithNameExistsInList(ArrayList<Location> locations, String locationName) {
+        for (Location location : locations) {
+            if (location.getName().equals(locationName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

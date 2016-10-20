@@ -4,6 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <fragment
+        android:id="@+id/place_autocomplete_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+        />
+
     <FrameLayout
         android:id="@+id/channel_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -25,10 +32,10 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/region_name"
+                android:id="@+id/location_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/region_hint"/>
+                android:hint="@string/location_hint"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -36,27 +43,27 @@
                 android:orientation="horizontal">
 
                 <SeekBar
-                    android:id="@+id/region_seek_bar"
+                    android:id="@+id/location_seek_bar"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:progress="10"/>
 
                 <TextView
-                    android:id="@+id/region_radius_value"
+                    android:id="@+id/location_radius_value"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"/>
 
             </LinearLayout>
 
             <Button
-                android:id="@+id/add_region_button"
+                android:id="@+id/add_location_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Save"/>
 
             <Button
-                android:id="@+id/del_region_button"
+                android:id="@+id/del_location_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"

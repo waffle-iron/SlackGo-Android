@@ -1,24 +1,26 @@
 package com.scv.slackgo.models;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.scv.slackgo.helpers.Constants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by kado on 10/13/16.
  */
 
-public class Region {
+public class Location {
 
     private String name;
-    private float latitude;
-    private float longitude;
+    private double latitude;
+    private double longitude;
     private float radius;
     private float cameraZoom;
     private ArrayList<String> channels;
 
 
-    public Region(String name, float latitude, float longitude, float radius, float cameraZoom, ArrayList<String> channels) {
+    public Location(String name, double latitude, double longitude, float radius, float cameraZoom, ArrayList<String> channels) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -27,11 +29,16 @@ public class Region {
         this.channels = channels;
     }
 
-    public static Region getMockRegion(){
+    public static Location getSCVLocation(){
         ArrayList<String> channels = new ArrayList<>();
         channels.add("oficina");
-        return new Region(Constants.OFFICE, Constants.SCV_OFFICE_LAT , Constants.SCV_OFFICE_LONG, 100, 15.0f, channels);
+        return new Location(Constants.OFFICE, Constants.SCV_OFFICE_LAT , Constants.SCV_OFFICE_LONG, 100, 15.0f, channels);
     }
+
+    public Location(LatLng location) {
+        this("Location 1", location.latitude , location.longitude, 100, 15.0f, new ArrayList<String>(Arrays.asList("oficina")));
+    }
+
 
     public String getName() {
         return name;
@@ -41,19 +48,19 @@ public class Region {
         this.name = name;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
