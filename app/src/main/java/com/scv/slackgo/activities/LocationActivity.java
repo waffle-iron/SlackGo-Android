@@ -37,7 +37,7 @@ public class LocationActivity extends MapActivity implements Observer {
     private SeekBar locationSeekBar;
     private TextView locationValue;
     private EditText locationName;
-    private Button addLocationButton;
+    private Button saveLocationButton;
     private Button delLocationButton;
     private Location location;
     private ArrayList<Location> locationsList;
@@ -49,13 +49,6 @@ public class LocationActivity extends MapActivity implements Observer {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-
         initializeVariables();
 
         setDetailValues();
@@ -75,7 +68,16 @@ public class LocationActivity extends MapActivity implements Observer {
 
             slackService.getAvailableChannels();
         }
+
     }
+
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//
+//
+//
+//    }
 
     @Override
     public int getLayoutId() {
@@ -108,15 +110,18 @@ public class LocationActivity extends MapActivity implements Observer {
         location = GsonUtils.getObjectFromJson(locationJSON, Location.class);
         locationsList = GsonUtils.getListFromJson(locationsListJSON, Location.class);
 
+        slackService = new SlackApiService(this);
+        //Get resources
         locationSeekBar = (SeekBar) findViewById(R.id.location_seek_bar);
         locationValue = (TextView) findViewById(R.id.location_radius_value);
         locationName = (EditText) findViewById(R.id.location_name);
-        addLocationButton = (Button) findViewById(R.id.add_location_button);
+        saveLocationButton = (Button) findViewById(R.id.save_location_button);
         delLocationButton = (Button) findViewById(R.id.del_location_button);
         locationSeekBar.setMax(100);
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
     }
+
 
     private void addSearchListener() {
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -132,35 +137,29 @@ public class LocationActivity extends MapActivity implements Observer {
         });
     }
 
+
     private void addCRUDButtonsListener() {
         delLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Preferences.deleteLocationFromListByName(LocationActivity.this, locationName.getText().toString());
+                Preferences.deleteLocationFromList(LocationActivity.this, location, locationsList);
                 goToLocationActivity();
             }
         });
 
-        addLocationButton.setOnClickListener(new View.OnClickListener() {
+        saveLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Location mocked = Location.getSCVLocation();
-                ArrayList<String> channels = new ArrayList<String>();
-                channels.add(getString(R.string.channel_office));
-                Location newLocation = new Location(locationName.getText().toString(), mocked.getLatitude(),
-                        mocked.getLongitude(), mocked.getRadius(),
-                        mocked.getCameraZoom(), channels);
-
-                if (isValidLocation(newLocation)) {
-                    Preferences.addLocationToSharedPreferences(LocationActivity.this, newLocation);
-                    goToLocationActivity();
+                if (location != null) {
+                    editLocation();
                 } else {
-                    Toast.makeText(LocationActivity.this, "Location Incorrecta",
-                            Toast.LENGTH_LONG).show();
+                    addNewLocation();
                 }
+                goToLocationActivity();
             }
         });
     }
+
 
     private void addLocationBarListener() {
         locationSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -203,6 +202,44 @@ public class LocationActivity extends MapActivity implements Observer {
     private void goToLocationActivity() {
         Intent locationsIntent = new Intent(LocationActivity.this, LocationsListActivity.class);
         startActivity(locationsIntent);
+        finish();
+    }
+
+
+    private void addNewLocation() {
+        Location mocked = Location.getSCVLocation();
+        ArrayList<String> channels = new ArrayList<String>();
+        channels.add(getString(R.string.channel_office));
+        Location newLocation = new Location(locationName.getText().toString(), mocked.getLatitude(),
+                mocked.getLongitude(), mocked.getRadius(),
+                mocked.getCameraZoom(), channels);
+
+        if (isValidLocation(newLocation)) {
+            Preferences.addLocationToSharedPreferences(LocationActivity.this, newLocation);
+        } else {
+            ErrorUtils.toastError(this,getString(R.string.invalid_location_name), Toast.LENGTH_SHORT);
+        }
+    }
+
+    private void editLocation() {
+
+        int locationPosition = 0;
+        for (Location editLocation : locationsList) {
+            if (editLocation.equals(location)) {
+                break;
+            }
+            locationPosition++;
+        }
+
+        Location newLocation = locationsList.get(locationPosition);
+
+        if (isValidLocation(newLocation)) {
+            locationsList.get(locationPosition).setName(locationName.getText().toString());
+            Preferences.removeDataFromSharedPreferences(this, Constants.INTENT_LOCATION_LIST);
+            Preferences.addLocationsListToSharedPreferences(this, locationsList);
+        } else {
+            ErrorUtils.toastError(this,getString(R.string.invalid_location_name), Toast.LENGTH_SHORT);
+        }
     }
 
 

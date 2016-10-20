@@ -32,17 +32,19 @@ public class LocationsListActivity extends MapActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         getLoaderManager().destroyLoader(0);
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
+    protected void onResume() {
+        super.onResume();
         locationsList = Preferences.getLocationsList(this);
-
         setListView();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     private void setListView() {
@@ -58,11 +60,9 @@ public class LocationsListActivity extends MapActivity {
                 String locationJSON = GsonUtils.getJsonFromObject(locationClicked);
                 String locationsListJSON = GsonUtils.getJsonFromObject(locationsList);
 
-
-                Intent locationIntent = new Intent(LocationsListActivity.this, LocationActivity.class);
+                Intent locationIntent = new Intent(getApplicationContext(), LocationActivity.class);
                 locationIntent.putExtra(Constants.INTENT_LOCATION_CLICKED, locationJSON);
                 locationIntent.putExtra(Constants.INTENT_LOCATION_LIST, locationsListJSON);
-
                 startActivity(locationIntent);
             }
         });
@@ -84,6 +84,15 @@ public class LocationsListActivity extends MapActivity {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    public void addNewRegion(View view) {
+        Gson gson = new Gson();
+        String locationsListJSON = gson.toJson(locationsList);
+        Intent locationIntent = new Intent(getApplicationContext(), LocationActivity.class);
+        locationIntent.putExtra(Constants.INTENT_LOCATION_LIST, locationsListJSON);
+        startActivity(locationIntent);
+
     }
 
     @Override
