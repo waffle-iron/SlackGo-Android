@@ -1,8 +1,9 @@
 package com.scv.slackgo.services;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -10,23 +11,36 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
+import com.scv.slackgo.models.Channel;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
+import org.apache.commons.collections4.Transformer;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
  * Created by ayelen@scvsoft.com on 10/12/16.
  */
 
-public class SlackApiService implements APIInterface {
+public class SlackApiService extends Observable implements APIInterface {
 
     private RequestQueue queue;
     private Context context;
+    private ArrayList<String> channelsName;
 
     public SlackApiService(Context context) {
         this.context = context;
+        this.addObserver((Observer) context);
         queue = Volley.newRequestQueue(context);
     }
 
@@ -36,13 +50,69 @@ public class SlackApiService implements APIInterface {
     }
 
     @Override
-    public Response joinChannel(String channel) {
-        return null;
+    public void joinChannel(String channel) {
+
+        String url = FromatUrl(R.string.slack_channel_join, true, channel);
+        callToAPIWithoutResponse(url);
     }
 
     @Override
-    public Response leaveChannel(String channel) {
-        return null;
+    public void leaveChannel(String channel) {
+
+        String url = FromatUrl(R.string.slack_channel_leave, true, channel);
+        callToAPIWithoutResponse(url);
+    }
+
+    private void callToAPIWithoutResponse(String url) {
+        StringRequest request = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {}
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        showErrorAlert();
+                    }
+                });
+        queue.add(request);
+
+    }
+
+    private String FromatUrl(int urlIndex, boolean isTokenNeeded, String... params) {
+
+        if(isTokenNeeded) {
+            String slackToken = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, context.MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
+            return String.format(context.getString(urlIndex), slackToken, params);
+        }
+        return String.format(context.getString(urlIndex), params);
+    }
+
+    @Override
+    public void getAvailableChannels() {
+
+        String slackToken = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, context.MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
+        String url = String.format(context.getString(R.string.slack_channels_url), slackToken );
+
+        StringRequest request = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONArray listOfChannelsAsJSON = new JSONObject(response).getJSONArray("channels");
+                            getChannelsName(listOfChannelsAsJSON);
+                        } catch (JSONException e) {
+                            showErrorAlert();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        showErrorAlert();
+                    }
+                });
+        queue.add(request);
     }
 
     public void getSlackToken(String url) {
@@ -53,50 +123,59 @@ public class SlackApiService implements APIInterface {
                     public void onResponse(String response) {
                         try {
                             JSONObject responseToJson = new JSONObject(response);
-                            SharedPreferences.Editor editor = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, context.MODE_PRIVATE).edit();
-                            editor.putString(Constants.SLACK_TOKEN, responseToJson.getString("access_token"));
-                            editor.commit();
+                            addTokenToPreferences(responseToJson);
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            showErrorAlert();
                         }
-
-
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("HttpClient", "error: " + error.toString());
+                        showErrorAlert();
                     }
                 });
         queue.add(request);
 
     }
 
-    private void createStringRequest(int method, String url) {
-        final JSONObject[] responseToJson = new JSONObject[1];
-        StringRequest request = new StringRequest(method, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                         responseToJson[0] = null;
-                        try {
-                            responseToJson[0] = new JSONObject(response);
+    private void addTokenToPreferences(JSONObject responseToJson) throws JSONException {
+        SharedPreferences.Editor editor = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, context.MODE_PRIVATE).edit();
+        editor.putString(Constants.SLACK_TOKEN, responseToJson.getString("access_token"));
+        editor.commit();
+        notifyObservers();
+    }
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+    private void getChannelsName(JSONArray listOfChannelsAsJSON) throws JSONException {
+        List<Channel> channels = new ArrayList<>();
+        for(int i = 0; i < listOfChannelsAsJSON.length(); i++) {
+            channels.add(Channel.fromJson(listOfChannelsAsJSON.getJSONObject(i)));
+        }
 
+        CollectionUtils.filter(channels, new Predicate<Channel>() {
+            @Override
+            public boolean evaluate(Channel channel) {
+                return !channel.isArchived();
+            }
+        });
 
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("HttpClient", "error: " + error.toString());
-                    }
-                });
-        queue.add(request);
+        channelsName = new ArrayList<>(CollectionUtils.collect(channels, new Transformer<Channel, String>() {
+            public String transform(Channel channel) {
+                return channel.getName();
+            }
+        }));
+        notifyObservers(channelsName);
+    }
+
+    private void showErrorAlert() {
+        final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        alertDialog.setTitle(context.getText(R.string.error_title));
+        alertDialog.setMessage(context.getText(R.string.error_msg));
+        alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getText(R.string.ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialog.hide();
+            } });
+        alertDialog.show();
     }
 
 }

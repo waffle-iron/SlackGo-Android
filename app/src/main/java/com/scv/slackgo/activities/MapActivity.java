@@ -47,7 +47,6 @@ public abstract class MapActivity extends AppCompatActivity implements OnMapRead
     }
 
     public void setMarker(Location location) {
-        this.googleMap.clear();
         LatLng officePosition = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(officePosition);
