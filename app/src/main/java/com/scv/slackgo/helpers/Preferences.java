@@ -88,5 +88,4 @@ public class Preferences {
         }
         return false;
     }
-
 }

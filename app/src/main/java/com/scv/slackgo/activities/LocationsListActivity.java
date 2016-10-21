@@ -11,6 +11,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.gson.Gson;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
+import com.scv.slackgo.helpers.GsonUtils;
 import com.scv.slackgo.helpers.Preferences;
 import com.scv.slackgo.models.Location;
 import com.scv.slackgo.services.SlackApiService;
@@ -54,8 +55,8 @@ public class LocationsListActivity extends MapActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Location locationClicked = locationsList.get(position);
                 Gson gson = new Gson();
-                String locationJSON = gson.toJson(locationClicked);
-                String locationsListJSON = gson.toJson(locationsList);
+                String locationJSON = GsonUtils.getJsonFromObject(locationClicked);
+                String locationsListJSON = GsonUtils.getJsonFromObject(locationsList);
 
 
                 Intent locationIntent = new Intent(LocationsListActivity.this, LocationActivity.class);
@@ -81,7 +82,7 @@ public class LocationsListActivity extends MapActivity {
             }
             return locationNameList;
         } else {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
     }
 

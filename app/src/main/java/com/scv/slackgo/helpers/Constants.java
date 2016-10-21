@@ -74,6 +74,8 @@ public final class Constants {
 
     public static final String SHARED_PREFERENCES_NAME = "slackgo.SHARED_PREFERENCES_NAME";
 
+    public static final String SHARED_PREFERENCES_AVAILABLE_CHANNELS = "slackgo.SHARED_PREFERENCES_AVAILABLE_CHANNELS";
+
 
     public static final String GEOFENCES_ADDED_KEY = PACKAGE_NAME + ".GEOFENCES_ADDED_KEY";
 
