@@ -109,11 +109,8 @@ public class LocationActivity extends MapActivity implements Observer {
         String locationJSON = myIntent.getStringExtra(Constants.INTENT_LOCATION_CLICKED);
         String locationsListJSON = myIntent.getStringExtra(Constants.INTENT_LOCATION_LIST);// will return "FirstKeyValue"
 
-        Gson gson = new Gson();
-        location = gson.fromJson(locationJSON, Location.class);
-        Type typeOfLocations = new TypeToken<List<Location>>() {
-        }.getType();
-        locationsList = gson.fromJson(locationsListJSON, typeOfLocations);
+        location = Preferences.getObjectFromJson(locationJSON, Location.class);
+        locationsList = Preferences.getListFromJson(locationsListJSON, Location.class);
 
         locationSeekBar = (SeekBar) findViewById(R.id.location_seek_bar);
         locationValue = (TextView) findViewById(R.id.location_radius_value);

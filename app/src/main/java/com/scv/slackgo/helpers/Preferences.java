@@ -89,4 +89,23 @@ public class Preferences {
         return false;
     }
 
+    public static <C> C getObjectFromJson(String json, Class<C> clazz) {
+        Gson gson = new Gson();
+        C object = gson.fromJson(json, clazz);
+        return object;
+
+    }
+
+    public static <C> ArrayList<C> getListFromJson(String json, Class<C> clazz) {
+        Gson gson = new Gson();
+        Type typeOfLocations = new TypeToken<List<C>>() {
+        }.getType();
+        return gson.fromJson(json, typeOfLocations);
+    }
+
+    public static <C> String getJsonFromObject(C object) {
+        Gson gson = new Gson();
+        return gson.toJson(object);
+    }
+
 }

@@ -54,8 +54,8 @@ public class LocationsListActivity extends MapActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Location locationClicked = locationsList.get(position);
                 Gson gson = new Gson();
-                String locationJSON = gson.toJson(locationClicked);
-                String locationsListJSON = gson.toJson(locationsList);
+                String locationJSON = Preferences.getJsonFromObject(locationClicked);
+                String locationsListJSON = Preferences.getJsonFromObject(locationsList);
 
 
                 Intent locationIntent = new Intent(LocationsListActivity.this, LocationActivity.class);
