@@ -13,6 +13,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
+import com.scv.slackgo.helpers.ErrorUtils;
 import com.scv.slackgo.models.Channel;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -72,7 +73,7 @@ public class SlackApiService extends Observable implements APIInterface {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        showErrorAlert();
+                        ErrorUtils.showErrorAlert(context);
                     }
                 });
         queue.add(request);
@@ -102,14 +103,14 @@ public class SlackApiService extends Observable implements APIInterface {
                             JSONArray listOfChannelsAsJSON = new JSONObject(response).getJSONArray("channels");
                             getChannelsName(listOfChannelsAsJSON);
                         } catch (JSONException e) {
-                            showErrorAlert();
+                            ErrorUtils.showErrorAlert(context);
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        showErrorAlert();
+                        ErrorUtils.showErrorAlert(context);
                     }
                 });
         queue.add(request);
@@ -125,14 +126,14 @@ public class SlackApiService extends Observable implements APIInterface {
                             JSONObject responseToJson = new JSONObject(response);
                             addTokenToPreferences(responseToJson);
                         } catch (JSONException e) {
-                            showErrorAlert();
+                            ErrorUtils.showErrorAlert(context);
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        showErrorAlert();
+                        ErrorUtils.showErrorAlert(context);
                     }
                 });
         queue.add(request);
@@ -166,16 +167,4 @@ public class SlackApiService extends Observable implements APIInterface {
         }));
         notifyObservers(channelsName);
     }
-
-    private void showErrorAlert() {
-        final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-        alertDialog.setTitle(context.getText(R.string.error_title));
-        alertDialog.setMessage(context.getText(R.string.error_msg));
-        alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getText(R.string.ok), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.hide();
-            } });
-        alertDialog.show();
-    }
-
 }

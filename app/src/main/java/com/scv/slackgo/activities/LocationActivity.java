@@ -1,7 +1,5 @@
 package com.scv.slackgo.activities;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -16,18 +14,16 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
+import com.scv.slackgo.helpers.ErrorUtils;
+import com.scv.slackgo.helpers.GsonUtils;
 import com.scv.slackgo.helpers.Preferences;
 import com.scv.slackgo.models.Location;
 import com.scv.slackgo.services.SlackApiService;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -62,7 +58,7 @@ public class LocationActivity extends MapActivity implements Observer {
 
         initializeVariables();
 
-        setDetailVallues();
+        setDetailValues();
 
         addLocationBarListener();
 
@@ -109,8 +105,8 @@ public class LocationActivity extends MapActivity implements Observer {
         String locationJSON = myIntent.getStringExtra(Constants.INTENT_LOCATION_CLICKED);
         String locationsListJSON = myIntent.getStringExtra(Constants.INTENT_LOCATION_LIST);// will return "FirstKeyValue"
 
-        location = Preferences.getObjectFromJson(locationJSON, Location.class);
-        locationsList = Preferences.getListFromJson(locationsListJSON, Location.class);
+        location = GsonUtils.getObjectFromJson(locationJSON, Location.class);
+        locationsList = GsonUtils.getListFromJson(locationsListJSON, Location.class);
 
         locationSeekBar = (SeekBar) findViewById(R.id.location_seek_bar);
         locationValue = (TextView) findViewById(R.id.location_radius_value);
@@ -131,20 +127,9 @@ public class LocationActivity extends MapActivity implements Observer {
 
             @Override
             public void onError(Status status) {
-                showErrorAlert();
+                ErrorUtils.showErrorAlert(LocationActivity.this);
             }
         });
-    }
-
-    private void showErrorAlert() {
-        final AlertDialog alertDialog = new AlertDialog.Builder(LocationActivity.this).create();
-        alertDialog.setTitle(getText(R.string.error_title));
-        alertDialog.setMessage(getText(R.string.error_msg));
-        alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getText(R.string.ok), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                alertDialog.hide();
-            } });
-        alertDialog.show();
     }
 
     private void addCRUDButtonsListener() {
@@ -202,7 +187,7 @@ public class LocationActivity extends MapActivity implements Observer {
         });
     }
 
-    private void setDetailVallues() {
+    private void setDetailValues() {
         if (location != null) {
             locationName.setText(location.getName());
             locationSeekBar.setProgress(new BigDecimal(location.getRadius() / 10).intValue());
