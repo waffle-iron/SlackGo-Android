@@ -1,8 +1,11 @@
 package com.scv.slackgo.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -33,15 +36,15 @@ import java.util.Observer;
 
 public class LocationActivity extends MapActivity implements Observer {
 
-    private String slackCode;
     private SeekBar locationSeekBar;
-    private TextView locationValue;
+    private TextView locationRadiusValue;
     private EditText locationName;
     private Button saveLocationButton;
     private Button delLocationButton;
     private Location location;
     private ArrayList<Location> locationsList;
     private ArrayList<String> channelsList;
+    private String toastMsg;
     SlackApiService slackService;
     PlaceAutocompleteFragment autocompleteFragment;
 
@@ -59,6 +62,8 @@ public class LocationActivity extends MapActivity implements Observer {
 
         addSearchListener();
 
+        addLocationNameEnterListener();
+
         String slackCode = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
 
         if (slackCode == null) {
@@ -71,13 +76,6 @@ public class LocationActivity extends MapActivity implements Observer {
 
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//
-//
-//
-//    }
 
     @Override
     public int getLayoutId() {
@@ -108,12 +106,12 @@ public class LocationActivity extends MapActivity implements Observer {
         String locationsListJSON = myIntent.getStringExtra(Constants.INTENT_LOCATION_LIST);// will return "FirstKeyValue"
 
         location = GsonUtils.getObjectFromJson(locationJSON, Location.class);
-        locationsList = GsonUtils.getListFromJson(locationsListJSON, Location.class);
+        locationsList = GsonUtils.getListFromJson(locationsListJSON, Location[].class);
 
         slackService = new SlackApiService(this);
         //Get resources
-        locationSeekBar = (SeekBar) findViewById(R.id.location_seek_bar);
-        locationValue = (TextView) findViewById(R.id.location_radius_value);
+        locationSeekBar = (SeekBar) findViewById(R.id.location_radius_seek_bar);
+        locationRadiusValue = (TextView) findViewById(R.id.location_radius_value);
         locationName = (EditText) findViewById(R.id.location_name);
         saveLocationButton = (Button) findViewById(R.id.save_location_button);
         delLocationButton = (Button) findViewById(R.id.del_location_button);
@@ -155,7 +153,6 @@ public class LocationActivity extends MapActivity implements Observer {
                 } else {
                     addNewLocation();
                 }
-                goToLocationActivity();
             }
         });
     }
@@ -177,7 +174,7 @@ public class LocationActivity extends MapActivity implements Observer {
                 if (fromUser) {
                     if (progress >= 0 && progress <= locationSeekBar.getMax()) {
                         String progressString = String.valueOf(progress * 10);
-                        locationValue.setText(progressString);
+                        locationRadiusValue.setText(progressString);
                         seekBar.setProgress(progress);
                         circle.setRadius(progress * 10);
                     }
@@ -186,15 +183,33 @@ public class LocationActivity extends MapActivity implements Observer {
         });
     }
 
+
+    private void addLocationNameEnterListener() {
+        locationName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId,
+                                          KeyEvent event) {
+                if (event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    in.hideSoftInputFromWindow(v.getWindowToken(),
+                            InputMethodManager.HIDE_NOT_ALWAYS);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
     private void setDetailValues() {
         if (location != null) {
             locationName.setText(location.getName());
             locationSeekBar.setProgress(new BigDecimal(location.getRadius() / 10).intValue());
-            locationValue.setText(String.valueOf(location.getRadius() * 10));
+            locationRadiusValue.setText(String.valueOf(location.getRadius() * 10));
             delLocationButton.setVisibility(View.VISIBLE);
         } else {
             locationSeekBar.setProgress(0);
-            locationValue.setText(String.valueOf(0));
+            locationRadiusValue.setText(String.valueOf(0));
             delLocationButton.setVisibility(View.GONE);
         }
     }
@@ -216,8 +231,9 @@ public class LocationActivity extends MapActivity implements Observer {
 
         if (isValidLocation(newLocation)) {
             Preferences.addLocationToSharedPreferences(LocationActivity.this, newLocation);
+            goToLocationActivity();
         } else {
-            ErrorUtils.toastError(this,getString(R.string.invalid_location_name), Toast.LENGTH_SHORT);
+            ErrorUtils.toastError(this, toastMsg, Toast.LENGTH_SHORT);
         }
     }
 
@@ -231,24 +247,35 @@ public class LocationActivity extends MapActivity implements Observer {
             locationPosition++;
         }
 
-        Location newLocation = locationsList.get(locationPosition);
+        Location mocked = Location.getSCVLocation();
+        ArrayList<String> channels = new ArrayList<String>();
+        Location newLocation = new Location(locationName.getText().toString(), mocked.getLatitude(),
+                mocked.getLongitude(), mocked.getRadius(),
+                mocked.getCameraZoom(), channels);
 
         if (isValidLocation(newLocation)) {
             locationsList.get(locationPosition).setName(locationName.getText().toString());
             Preferences.removeDataFromSharedPreferences(this, Constants.INTENT_LOCATION_LIST);
             Preferences.addLocationsListToSharedPreferences(this, locationsList);
+            goToLocationActivity();
         } else {
-            ErrorUtils.toastError(this,getString(R.string.invalid_location_name), Toast.LENGTH_SHORT);
+            ErrorUtils.toastError(this, toastMsg, Toast.LENGTH_SHORT);
         }
     }
 
 
     private boolean isValidLocation(Location location) {
         boolean isValid = true;
-        if (locationsList != null) {
-            for (Location locationInList : locationsList) {
-                if (location.getName().equals(locationInList.getName())) {
-                    isValid = false;
+        if (location.getName().isEmpty()) {
+            isValid = false;
+            toastMsg = getString(R.string.empty_location_name);
+        } else {
+            if (locationsList != null) {
+                for (Location locationInList : locationsList) {
+                    if (location.getName().equals(locationInList.getName())) {
+                        isValid = false;
+                        toastMsg = getString(R.string.invalid_location_name);
+                    }
                 }
             }
         }

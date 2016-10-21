@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.gson.Gson;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.GsonUtils;
@@ -56,7 +55,6 @@ public class LocationsListActivity extends MapActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Location locationClicked = locationsList.get(position);
-                Gson gson = new Gson();
                 String locationJSON = GsonUtils.getJsonFromObject(locationClicked);
                 String locationsListJSON = GsonUtils.getJsonFromObject(locationsList);
 
@@ -87,12 +85,12 @@ public class LocationsListActivity extends MapActivity {
     }
 
     public void addNewRegion(View view) {
-        Gson gson = new Gson();
-        String locationsListJSON = gson.toJson(locationsList);
         Intent locationIntent = new Intent(getApplicationContext(), LocationActivity.class);
-        locationIntent.putExtra(Constants.INTENT_LOCATION_LIST, locationsListJSON);
+        if (locationsList != null) {
+            String locationsListJSON = GsonUtils.getJsonFromObject(locationsList);
+            locationIntent.putExtra(Constants.INTENT_LOCATION_LIST, locationsListJSON);
+        }
         startActivity(locationIntent);
-
     }
 
     @Override
