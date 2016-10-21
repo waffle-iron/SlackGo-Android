@@ -3,6 +3,7 @@ package com.scv.slackgo.helpers;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.widget.Toast;
 
 import com.scv.slackgo.R;
 
@@ -20,5 +21,9 @@ public class ErrorUtils {
                 alertDialog.hide();
             } });
         alertDialog.show();
+    }
+
+    public static void toastError(Context context, String errorMsg, int duration) {
+        Toast.makeText(context, errorMsg, duration).show();
     }
 }

@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.gson.Gson;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.GsonUtils;
@@ -32,17 +31,19 @@ public class LocationsListActivity extends MapActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         getLoaderManager().destroyLoader(0);
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
+    protected void onResume() {
+        super.onResume();
         locationsList = Preferences.getLocationsList(this);
-
         setListView();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     private void setListView() {
@@ -54,15 +55,12 @@ public class LocationsListActivity extends MapActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Location locationClicked = locationsList.get(position);
-                Gson gson = new Gson();
                 String locationJSON = GsonUtils.getJsonFromObject(locationClicked);
                 String locationsListJSON = GsonUtils.getJsonFromObject(locationsList);
 
-
-                Intent locationIntent = new Intent(LocationsListActivity.this, LocationActivity.class);
+                Intent locationIntent = new Intent(getApplicationContext(), LocationActivity.class);
                 locationIntent.putExtra(Constants.INTENT_LOCATION_CLICKED, locationJSON);
                 locationIntent.putExtra(Constants.INTENT_LOCATION_LIST, locationsListJSON);
-
                 startActivity(locationIntent);
             }
         });
@@ -84,6 +82,15 @@ public class LocationsListActivity extends MapActivity {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    public void addNewRegion(View view) {
+        Intent locationIntent = new Intent(getApplicationContext(), LocationActivity.class);
+        if (locationsList != null) {
+            String locationsListJSON = GsonUtils.getJsonFromObject(locationsList);
+            locationIntent.putExtra(Constants.INTENT_LOCATION_LIST, locationsListJSON);
+        }
+        startActivity(locationIntent);
     }
 
     @Override

@@ -29,14 +29,14 @@ public class Location {
         this.channels = channels;
     }
 
-    public static Location getSCVLocation(){
+    public static Location getSCVLocation() {
         ArrayList<String> channels = new ArrayList<>();
         channels.add("oficina");
-        return new Location(Constants.OFFICE, Constants.SCV_OFFICE_LAT , Constants.SCV_OFFICE_LONG, 100, 15.0f, channels);
+        return new Location(Constants.OFFICE, Constants.SCV_OFFICE_LAT, Constants.SCV_OFFICE_LONG, 100, 15.0f, channels);
     }
 
     public Location(LatLng location) {
-        this("Location 1", location.latitude , location.longitude, 100, 15.0f, new ArrayList<String>(Arrays.asList("oficina")));
+        this("Location 1", location.latitude, location.longitude, 100, 15.0f, new ArrayList<String>(Arrays.asList("oficina")));
     }
 
 
@@ -86,5 +86,17 @@ public class Location {
 
     public void setChannels(ArrayList<String> channels) {
         this.channels = channels;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) {
+            return false;
+        }
+        final Location otherLocation = (Location) object;
+        if ((this.name == null) ? (otherLocation.name != null) : !this.name.equals(otherLocation.name)) {
+            return false;
+        }
+        return true;
     }
 }

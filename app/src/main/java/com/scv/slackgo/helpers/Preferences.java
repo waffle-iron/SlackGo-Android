@@ -42,7 +42,7 @@ public class Preferences {
         return ((locations == null) || (locations.size() == 0));
     }
 
-    private static void addLocationsListToSharedPreferences(Activity activity, ArrayList<Location> locations) {
+    public static void addLocationsListToSharedPreferences(Activity activity, ArrayList<Location> locations) {
         Gson gson = new Gson();
         String locationsJSON = gson.toJson(locations);
 
@@ -64,18 +64,11 @@ public class Preferences {
         addLocationsListToSharedPreferences(activity, listOfLocations);
     }
 
-    public static void deleteLocationFromListByName(Activity activity, String locationName) {
-        ArrayList<Location> listOfLocations = getLocationsList(activity);
-
-        for (Location location : listOfLocations) {
-            if (location.getName().equals(locationName)) {
-                listOfLocations.remove(location);
-            }
-        }
-
+    public static void deleteLocationFromList(Activity activity, Location location, ArrayList<Location> locationsList) {
+        locationsList.remove(location);
         removeDataFromSharedPreferences(activity, Constants.SHARED_PREFERENCES_LOCATIONS);
-        if (listOfLocations.size() > 0) {
-            addLocationsListToSharedPreferences(activity, listOfLocations);
+        if (locationsList.size() > 0) {
+            addLocationsListToSharedPreferences(activity, locationsList);
         }
     }
 

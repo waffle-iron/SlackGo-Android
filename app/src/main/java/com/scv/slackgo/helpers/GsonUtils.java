@@ -1,15 +1,14 @@
 package com.scv.slackgo.helpers;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,11 +27,12 @@ public class GsonUtils {
 
     }
 
-    public static <C> ArrayList<C> getListFromJson(String json, Class<C> clazz) {
-        Gson gson = new Gson();
-        Type typeOfLocations = new TypeToken<List<C>>() {
-        }.getType();
-        return gson.fromJson(json, typeOfLocations);
+    public static <C> ArrayList<C> getListFromJson(String json, Class<C[]> clazz) {
+        if (json == null) {
+            return null;
+        }
+        C[] arr = new Gson().fromJson(json, clazz);
+        return new ArrayList<C>(Arrays.asList(arr));
     }
 
     public static <C> String getJsonFromObject(C object) {
@@ -40,14 +40,14 @@ public class GsonUtils {
         return gson.toJson(object);
     }
 
-    public static <C> C setObject(final C object, JSONObject json){
+    public static <C> C setObject(final C object, JSONObject json) {
 
         Map<String, Object> values = null;
         try {
             values = toMap(json);
 
-        final Class<?> finalClazz = object.getClass();
-        for (Map.Entry<String, Object> input : values.entrySet()) {
+            final Class<?> finalClazz = object.getClass();
+            for (Map.Entry<String, Object> input : values.entrySet()) {
                 try {
                     Field field = finalClazz.getDeclaredField(input.getKey());
                     field.setAccessible(true);
@@ -58,7 +58,7 @@ public class GsonUtils {
                     return null;
                 }
             }
-        return object;
+            return object;
         } catch (JSONException e) {
             return null;
         }
@@ -68,15 +68,13 @@ public class GsonUtils {
         Map<String, Object> map = new HashMap<String, Object>();
 
         Iterator<String> keysItr = object.keys();
-        while(keysItr.hasNext()) {
+        while (keysItr.hasNext()) {
             String key = keysItr.next();
             Object value = object.get(key);
 
-            if(value instanceof JSONArray) {
+            if (value instanceof JSONArray) {
                 value = toList((JSONArray) value);
-            }
-
-            else if(value instanceof JSONObject) {
+            } else if (value instanceof JSONObject) {
                 value = toMap((JSONObject) value);
             }
             map.put(key, value);
@@ -86,13 +84,11 @@ public class GsonUtils {
 
     public static List<Object> toList(JSONArray array) throws JSONException {
         List<Object> list = new ArrayList<>();
-        for(int i = 0; i < array.length(); i++) {
+        for (int i = 0; i < array.length(); i++) {
             Object value = array.get(i);
-            if(value instanceof JSONArray) {
+            if (value instanceof JSONArray) {
                 value = toList((JSONArray) value);
-            }
-
-            else if(value instanceof JSONObject) {
+            } else if (value instanceof JSONObject) {
                 value = toMap((JSONObject) value);
             }
             list.add(value);

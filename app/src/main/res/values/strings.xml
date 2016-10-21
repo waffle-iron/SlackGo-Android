@@ -13,6 +13,8 @@
     <string name="ok">OK</string>
     <string name="error_title">Ooops!</string>
     <string name="error_msg">An error occurred. Please try again later</string>
+    <string name="invalid_location_name">This Location name is already in use.</string>
+    <string name="empty_location_name">The Location name can\'t be empty.</string>
 
     <!-- Button labels -->
     <string name="sign_out">Sign Out</string>
@@ -23,6 +25,7 @@
 
     <string name="regions_title">List of Regions</string>
     <string name="add_channel">new channel</string>
+    <string name="add_location">+</string>
 
     <string name="channel_office">oficina</string>
     <string name="slack_link">https://slack.com/oauth/authorize?scope=%1$s&amp;client_id=%2$s&amp;redirect_uri=%3$s&amp;state=resumeSignIn</string>
