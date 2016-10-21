@@ -11,9 +11,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.ErrorUtils;
+import com.scv.slackgo.helpers.GsonUtils;
 import com.scv.slackgo.models.Channel;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -148,10 +150,12 @@ public class SlackApiService extends Observable implements APIInterface {
     }
 
     private void getChannelsName(JSONArray listOfChannelsAsJSON) throws JSONException {
+
         List<Channel> channels = new ArrayList<>();
         for(int i = 0; i < listOfChannelsAsJSON.length(); i++) {
-            channels.add(Channel.fromJson(listOfChannelsAsJSON.getJSONObject(i)));
+            channels.add(GsonUtils.setObject(new Channel(), listOfChannelsAsJSON.getJSONObject(i)));
         }
+
 
         CollectionUtils.filter(channels, new Predicate<Channel>() {
             @Override

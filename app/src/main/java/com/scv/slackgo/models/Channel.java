@@ -16,6 +16,8 @@ public class Channel {
         this.name = name;
         this.isArchived = isArchived;
     }
+    public Channel(){
+    }
 
     public static Channel fromJson(JSONObject json) throws JSONException {
         return new Channel(json.getString("name"), json.getBoolean("is_archived"));
