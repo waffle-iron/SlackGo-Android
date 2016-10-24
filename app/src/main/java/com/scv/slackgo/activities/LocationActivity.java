@@ -66,6 +66,9 @@ public class LocationActivity extends MapActivity implements Observer {
     protected ArrayList<Geofence> mGeofenceList;
 
 
+    protected ArrayList<Geofence> mGeofenceList;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
