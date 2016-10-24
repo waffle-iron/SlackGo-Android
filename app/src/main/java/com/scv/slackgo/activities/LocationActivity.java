@@ -1,8 +1,11 @@
 package com.scv.slackgo.activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -16,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
@@ -26,6 +30,7 @@ import com.scv.slackgo.helpers.ErrorUtils;
 import com.scv.slackgo.helpers.GsonUtils;
 import com.scv.slackgo.helpers.Preferences;
 import com.scv.slackgo.models.Location;
+import com.scv.slackgo.services.GeoFenceService;
 import com.scv.slackgo.services.SlackApiService;
 
 import java.math.BigDecimal;
@@ -40,6 +45,9 @@ import java.util.Observer;
 
 public class LocationActivity extends MapActivity implements Observer {
 
+    protected static final String TAG = "LocationActivity";
+
+
     private SeekBar locationSeekBar;
     private TextView locationRadiusValue;
     private EditText locationName;
@@ -50,13 +58,20 @@ public class LocationActivity extends MapActivity implements Observer {
     private ArrayList<String> channelsList;
     private String toastMsg;
     SlackApiService slackService;
+    GeoFenceService geoFenceService;
     PlaceAutocompleteFragment autocompleteFragment;
     ListView channelsListView;
+
+
+    protected ArrayList<Geofence> mGeofenceList;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        checkUserPermissions();
+
         initializeVariables();
 
         setDetailValues();
@@ -96,11 +111,27 @@ public class LocationActivity extends MapActivity implements Observer {
         this.googleMap.clear();
         if (location != null) {
             this.setMarker(location);
-
         } else {
             Location officeLocation = Location.getSCVLocation();
             this.setMarker(officeLocation);
         }
+    }
+
+
+    private void checkUserPermissions() {
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    Constants.RC_ASK_PERMISSIONS);
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    Constants.RC_ASK_PERMISSIONS);
+        }
+
     }
 
     private void initializeVariables() {
@@ -125,6 +156,16 @@ public class LocationActivity extends MapActivity implements Observer {
         locationSeekBar.setMax(100);
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+
+        //TODO use geofence set by user and save it in Location.
+        mGeofenceList = new ArrayList<Geofence>();
+        mGeofenceList.add(new Geofence.Builder()
+                .setRequestId(Constants.SCV_ID)
+                .setCircularRegion(Constants.SCV_OFFICE_LAT, Constants.SCV_OFFICE_LONG, Constants.RADIUS_METERS)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
+                .build());
     }
 
 
@@ -238,6 +279,7 @@ public class LocationActivity extends MapActivity implements Observer {
 
         if (isValidLocation(newLocation)) {
             Preferences.addLocationToSharedPreferences(LocationActivity.this, newLocation);
+            geoFenceService = new GeoFenceService(LocationActivity.this, mGeofenceList);
             goToLocationActivity();
         } else {
             ErrorUtils.toastError(this, toastMsg, Toast.LENGTH_SHORT);
@@ -264,6 +306,8 @@ public class LocationActivity extends MapActivity implements Observer {
             locationsList.get(locationPosition).setName(locationName.getText().toString());
             Preferences.removeDataFromSharedPreferences(this, Constants.INTENT_LOCATION_LIST);
             Preferences.addLocationsListToSharedPreferences(this, locationsList);
+            //adding geofences
+            geoFenceService = new GeoFenceService(LocationActivity.this, mGeofenceList);
             goToLocationActivity();
         } else {
             ErrorUtils.toastError(this, toastMsg, Toast.LENGTH_SHORT);
@@ -318,4 +362,35 @@ public class LocationActivity extends MapActivity implements Observer {
             slackService.getAvailableChannels();
         }
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        for (String permisson : permissions) {
+            switch (permisson) {
+                case Manifest.permission.ACCESS_FINE_LOCATION: {
+                    if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                        //LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, getGeofencingRequest(), getGeofencePendingIntent()).setResultCallback(this);
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                Constants.RC_ASK_PERMISSIONS);
+                    }
+                    break;
+                }
+                case Manifest.permission.ACCESS_COARSE_LOCATION: {
+                    if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                Constants.RC_ASK_PERMISSIONS);
+                    }
+                    break;
+                }
+
+            }
+        }
+
+    }
+
 }

@@ -1,7 +1,10 @@
 package com.scv.slackgo.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,7 +16,6 @@ import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.GsonUtils;
 import com.scv.slackgo.helpers.Preferences;
 import com.scv.slackgo.models.Location;
-import com.scv.slackgo.services.SlackApiService;
 
 import java.util.ArrayList;
 
@@ -23,9 +25,9 @@ import java.util.ArrayList;
  */
 public class LocationsListActivity extends MapActivity {
 
-    SlackApiService slackService;
     ListView listView;
     ArrayList<Location> locationsList = new ArrayList<Location>();
+    GoogleMap map;
 
 
     @Override
@@ -100,6 +102,7 @@ public class LocationsListActivity extends MapActivity {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
         super.onMapReady(googleMap);
         this.googleMap.getUiSettings().setZoomControlsEnabled(true);
         this.googleMap.getUiSettings().setCompassEnabled(true);
@@ -107,5 +110,24 @@ public class LocationsListActivity extends MapActivity {
         Location officeLocation = Location.getSCVLocation();
 
         this.setMarker(officeLocation);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+        }
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        for (String permisson : permissions) {
+            if (permisson.equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    map.setMyLocationEnabled(true);
+                }
+                break;
+            }
+        }
+    }
+
 }

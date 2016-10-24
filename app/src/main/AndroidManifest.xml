@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
 
     <application
         android:allowBackup="true"
@@ -18,7 +20,8 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAEv7OX4I4AfKu_-PFCCltTKVxPFJGGTEQ"/>
+            android:value="mmm mmm" />
+
 
         <uses-library android:name="com.google.android.maps" />
 
@@ -30,38 +33,40 @@
 
         </activity>
 
-        <activity android:name=".activities.LocationsListActivity"
+        <activity
+            android:name=".activities.LocationsListActivity"
             android:exported="true"
-            android:launchMode="singleInstance">
-        </activity>
+            android:launchMode="singleInstance"></activity>
 
-        <activity android:name=".activities.GeoFenceActivity"
-            android:exported="true"
-            android:launchMode="singleInstance">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <data android:scheme="scv"/>
-                <data android:host="edit"/>
-
-            </intent-filter>
-
-        </activity>
-
-        <activity android:name=".activities.LocationActivity"
+        <activity
+            android:name=".activities.LocationActivity"
             android:exported="true"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:pathPattern=".*"/>
-                <data android:scheme="scv"/>
-                <data android:host="authorize"/>
+
+                <data android:pathPattern=".*" />
+                <data android:scheme="scv" />
+                <data android:host="authorize" />
             </intent-filter>
+            <meta-data
+                android:name="com.google.android.gms.version"
+                android:value="@integer/google_play_services_version" />
         </activity>
 
 
-        <service android:name=".services.GeofenceTransitionsIntentService" />
+        <service
+            android:name=".services.GeoFenceTransitionsIntentService"
+            android:exported="false" />
+
+        <receiver android:name=".services.GeoFenceReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
