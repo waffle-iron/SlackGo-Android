@@ -37,4 +37,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile 'org.apache.commons:commons-collections4:4.1'
 
+    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+
 }

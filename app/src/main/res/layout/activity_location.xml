@@ -8,8 +8,7 @@
         android:id="@+id/place_autocomplete_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-        />
+        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
 
     <FrameLayout
         android:id="@+id/channel_map"
@@ -31,12 +30,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/location_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="@string/location_hint"/>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -56,18 +49,46 @@
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/save_location_button"
-                android:layout_width="wrap_content"
+            <GridLayout
+                android:id="@+id/details_grid"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save"/>
+                android:columnCount="2">
 
-            <Button
-                android:id="@+id/del_location_button"
+            <EditText
+                android:id="@+id/location_name"
+                android:layout_column="0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:text="Delete"/>
+                android:hint="@string/location_hint"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="0"
+                    android:orientation="vertical">
+                    <Button
+                        android:id="@+id/save_location_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Save"/>
+
+                    <Button
+                        android:id="@+id/del_location_button"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:text="Delete" />
+
+                </LinearLayout>
+                <ListView
+                    android:id="@+id/channel_list"
+                    android:layout_column="1"
+                    android:layout_height="wrap_content"
+                    android:layout_width="193dp">
+                </ListView>
+            </GridLayout>
 
         </LinearLayout>
 

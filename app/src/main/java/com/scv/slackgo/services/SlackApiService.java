@@ -1,8 +1,6 @@
 package com.scv.slackgo.services;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 
 import com.android.volley.Request;
@@ -11,7 +9,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 import com.scv.slackgo.R;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.ErrorUtils;
@@ -146,6 +143,7 @@ public class SlackApiService extends Observable implements APIInterface {
         SharedPreferences.Editor editor = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, context.MODE_PRIVATE).edit();
         editor.putString(Constants.SLACK_TOKEN, responseToJson.getString("access_token"));
         editor.commit();
+        setChanged();
         notifyObservers();
     }
 
@@ -169,6 +167,7 @@ public class SlackApiService extends Observable implements APIInterface {
                 return channel.getName();
             }
         }));
+        setChanged();
         notifyObservers(channelsName);
     }
 }
