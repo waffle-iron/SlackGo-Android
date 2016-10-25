@@ -27,8 +27,6 @@ public class LocationsListActivity extends MapActivity {
 
     ListView listView;
     ArrayList<Location> locationsList = new ArrayList<Location>();
-    GoogleMap map;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +100,6 @@ public class LocationsListActivity extends MapActivity {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
         super.onMapReady(googleMap);
         this.googleMap.getUiSettings().setZoomControlsEnabled(true);
         this.googleMap.getUiSettings().setCompassEnabled(true);
@@ -121,12 +118,10 @@ public class LocationsListActivity extends MapActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         for (String permisson : permissions) {
-            if (permisson.equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    map.setMyLocationEnabled(true);
-                }
-                break;
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    googleMap.setMyLocationEnabled(true);
             }
+                break;
         }
     }
 

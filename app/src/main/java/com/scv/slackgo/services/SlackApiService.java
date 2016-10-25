@@ -67,7 +67,8 @@ public class SlackApiService extends Observable implements APIInterface {
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
-                    public void onResponse(String response) {}
+                    public void onResponse(String response) {
+                    }
                 },
                 new Response.ErrorListener() {
                     @Override
@@ -81,7 +82,7 @@ public class SlackApiService extends Observable implements APIInterface {
 
     private String FromatUrl(int urlIndex, boolean isTokenNeeded, String... params) {
 
-        if(isTokenNeeded) {
+        if (isTokenNeeded) {
             String slackToken = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, context.MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
             return String.format(context.getString(urlIndex), slackToken, params);
         }
@@ -92,7 +93,7 @@ public class SlackApiService extends Observable implements APIInterface {
     public void getAvailableChannels() {
 
         String slackToken = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, context.MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
-        String url = String.format(context.getString(R.string.slack_channels_url), slackToken );
+        String url = String.format(context.getString(R.string.slack_channels_url), slackToken);
 
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -150,7 +151,7 @@ public class SlackApiService extends Observable implements APIInterface {
     private void getChannelsName(JSONArray listOfChannelsAsJSON) throws JSONException {
 
         List<Channel> channels = new ArrayList<>();
-        for(int i = 0; i < listOfChannelsAsJSON.length(); i++) {
+        for (int i = 0; i < listOfChannelsAsJSON.length(); i++) {
             channels.add(GsonUtils.setObject(new Channel(), listOfChannelsAsJSON.getJSONObject(i)));
         }
 

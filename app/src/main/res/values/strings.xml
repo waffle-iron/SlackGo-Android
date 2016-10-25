@@ -1,4 +1,5 @@
 <resources>
+    <!-- App texts -->
     <string name="app_name">SlackGo</string>
     <string name="app_welcome">Welcome to SlackGo!</string>
     <string name="app_welcome_text">This application is used to add (or kick) you to a channel depending on your current location</string>
@@ -6,7 +7,7 @@
     <string name="signing_in">Signing in…</string>
     <string name="signed_out">Signed out</string>
 
-    <!--<string name="channels_list">channels</string>-->
+
     <string name="preferences_regions_list">locations</string>
 
     <string name="status">Ready</string>
@@ -16,7 +17,7 @@
     <string name="invalid_location_name">This Location name is already in use.</string>
     <string name="empty_location_name">The Location name can\'t be empty.</string>
 
-    <!-- Button labels -->
+    <!-- activity_layouts text -->
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
 
@@ -26,6 +27,11 @@
     <string name="regions_title">List of Regions</string>
     <string name="add_channel">new channel</string>
     <string name="add_location">+</string>
+
+    <string name="location_hint">Location Name</string>
+
+
+
 
     <string name="channel_office">oficina</string>
     <string name="slack_link">https://slack.com/oauth/authorize?scope=%1$s&amp;client_id=%2$s&amp;redirect_uri=%3$s&amp;state=resumeSignIn</string>
@@ -64,8 +70,9 @@
     <string name="geofence_transition_exited">Exited</string>
     <string name="unknown_geofence_transition">Unknown Transition</string>
     <string name="geofence_transition_notification_text">Click notification to return app</string>
+    <string name="entering_geofence">You are entering in a channel geofence</string>
+    <string name="going_out_geofence">You are going out of a channel geofence</string>
 
 
-    <string name="location_hint">Location Name</string>
 
 </resources>

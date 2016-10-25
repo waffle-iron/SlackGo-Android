@@ -35,19 +35,23 @@ import com.scv.slackgo.activities.LocationActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
  * Listens for geofence transition changes.
  */
-public class GeoFenceTransitionsIntentService extends IntentService {
+public class GeoFenceTransitionsIntentService extends IntentService implements Observer {
 
     protected static final String TAG = "GeofenceTransitionsIS";
+    private ArrayList<String> channelsList;
 
     public GeoFenceTransitionsIntentService() {
         super(TAG);
     }
 
+    //TODO get channel where to join or leave.
     @Override
     protected void onHandleIntent(Intent intent) {
         GeofencingEvent event = GeofencingEvent.fromIntent(intent);
@@ -58,12 +62,15 @@ public class GeoFenceTransitionsIntentService extends IntentService {
             return;
         }
         int transitionType = event.getGeofenceTransition();
-        String msg = "lala";
+        String msg = "";
+        SlackApiService slackApiService = new SlackApiService(this);
         if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER) {
-            msg = "entro";
+            msg = getString(R.string.entering_geofence);
+            slackApiService.joinChannel("oficina");
         }
         if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
-            msg = "salio";
+            msg = getString(R.string.going_out_geofence);
+            slackApiService.leaveChannel("oficina");
         }
 
         sendNotification(msg);
@@ -107,4 +114,10 @@ public class GeoFenceTransitionsIntentService extends IntentService {
         notificationManager.notify(0, builder.build());
     }
 
+    @Override
+    public void update(Observable observable, Object data) {
+        if (data != null) {
+            channelsList = (ArrayList<String>) data;
+        }
+    }
 }
