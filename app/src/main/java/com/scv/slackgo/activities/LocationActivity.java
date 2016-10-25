@@ -1,9 +1,7 @@
 package com.scv.slackgo.activities;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -291,7 +289,6 @@ public class LocationActivity extends MapActivity implements Observer {
         return isValid;
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public void update(Observable observable, Object data) {
         if (data != null) {
