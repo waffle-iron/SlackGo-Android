@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +30,7 @@ import com.scv.slackgo.services.SlackApiService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -47,6 +51,7 @@ public class LocationActivity extends MapActivity implements Observer {
     private String toastMsg;
     SlackApiService slackService;
     PlaceAutocompleteFragment autocompleteFragment;
+    ListView channelsListView;
 
 
     @Override
@@ -70,7 +75,7 @@ public class LocationActivity extends MapActivity implements Observer {
             String code = getIntent().getData().getQueryParameters("code").get(0);
             slackService.getSlackToken(String.format(getString(R.string.slack_token_url),
                     getString(R.string.client_id), getString(R.string.client_secret), code, getString(R.string.redirect_oauth)));
-
+        } else {
             slackService.getAvailableChannels();
         }
 
@@ -100,6 +105,8 @@ public class LocationActivity extends MapActivity implements Observer {
 
     private void initializeVariables() {
         slackService = new SlackApiService(this);
+
+        channelsListView = (ListView) findViewById(R.id.channel_list);
 
         Intent myIntent = getIntent();
         String locationJSON = myIntent.getStringExtra(Constants.INTENT_LOCATION_CLICKED);
@@ -285,7 +292,30 @@ public class LocationActivity extends MapActivity implements Observer {
     @Override
     public void update(Observable observable, Object data) {
         if (data != null) {
-            channelsList = (ArrayList<String>) data;
+
+            ArrayList<String> dataAsstrings = new ArrayList<String>(((ArrayList<Object>)data).size());
+            for (Object object : (ArrayList<Object>) data) {
+                dataAsstrings.add(Objects.toString(object, null));
+            }
+            String[] dataArr = new String[dataAsstrings.size()];
+
+            channelsList = dataAsstrings;
+            String[] values = dataAsstrings.toArray(dataArr);
+
+            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(LocationActivity.this,
+                    android.R.layout.select_dialog_multichoice, android.R.id.text1, values);
+
+            channelsListView.setAdapter(adapter);
+
+            channelsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position,
+                                        long id) {
+                    channelsListView.setItemChecked(position, true);
+                }
+            });
+        } else {
+            slackService.getAvailableChannels();
         }
     }
 }

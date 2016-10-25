@@ -1,7 +1,10 @@
 package com.scv.slackgo.helpers;
 
+import com.google.common.base.CaseFormat;
 import com.google.gson.Gson;
 
+import org.apache.commons.collections4.Closure;
+import org.apache.commons.collections4.IterableUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,23 +44,28 @@ public class GsonUtils {
     }
 
     public static <C> C setObject(final C object, JSONObject json) {
+        final String regex = "([A-Z][a-z]+)";
+        final String replacement = "$1_";
 
-        Map<String, Object> values = null;
         try {
-            values = toMap(json);
+            final Map<String, Object> values = toMap(json);
 
             final Class<?> finalClazz = object.getClass();
-            for (Map.Entry<String, Object> input : values.entrySet()) {
-                try {
-                    Field field = finalClazz.getDeclaredField(input.getKey());
-                    field.setAccessible(true);
-                    field.set(object, input.getValue());
-                } catch (NoSuchFieldException e) {
-                    return null;
-                } catch (IllegalAccessException e) {
-                    return null;
+            List<Field> fields = Arrays.asList(finalClazz.getDeclaredFields());
+            IterableUtils.forEach(fields, new Closure<Field>() {
+                @Override
+                public void execute(Field input) {
+                    try {
+                        input.setAccessible(true);
+                        Object value = values.get(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, input.getName()));
+                        if(value != null) {
+                            input.set(object, value);
+                        }
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
+            });
             return object;
         } catch (JSONException e) {
             return null;
