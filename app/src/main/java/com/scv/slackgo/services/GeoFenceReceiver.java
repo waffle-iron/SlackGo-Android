@@ -15,16 +15,16 @@ import java.util.ArrayList;
  * Created by kado on 10/24/16.
  */
 
-public class GeoFenceReceiver extends BroadcastReceiver {
+public class GeofenceReceiver extends BroadcastReceiver {
 
-    protected static final String TAG = "GeoFenceReceiver";
-    protected GeoFenceService geofenceService;
+    protected static final String TAG = "GeofenceReceiver";
+    protected GeofenceService geofenceService;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
 
-        Log.v(TAG, "GeoFenceReceiver");
+        Log.v(TAG, "GeofenceReceiver");
 
         //TODO bring geofences from preferences
         ArrayList<Geofence> mGeofenceList = new ArrayList<Geofence>();
@@ -35,7 +35,7 @@ public class GeoFenceReceiver extends BroadcastReceiver {
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
                 .build());
 
-        geofenceService = new GeoFenceService(context, mGeofenceList);
+        geofenceService = new GeofenceService(context, mGeofenceList);
     }
 
 

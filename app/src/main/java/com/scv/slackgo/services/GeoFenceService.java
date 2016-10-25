@@ -25,16 +25,16 @@ import java.util.ArrayList;
  * Created by kado on 10/24/16.
  */
 
-public class GeoFenceService implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status> {
+public class GeofenceService implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status> {
 
-    protected static final String TAG = "GeoFenceService";
+    protected static final String TAG = "GeofenceService";
     private Context context;
     protected ArrayList<Geofence> mGeofenceList;
     protected GoogleApiClient mGoogleApiClient;
 
 
-    public GeoFenceService(Context context, ArrayList<Geofence> mGeofenceList) {
-        Log.v(TAG, "GeoFenceService");
+    public GeofenceService(Context context, ArrayList<Geofence> mGeofenceList) {
+        Log.v(TAG, "GeofenceService");
 
         this.context = context;
         this.mGeofenceList = mGeofenceList;
@@ -65,7 +65,7 @@ public class GeoFenceService implements GoogleApiClient.ConnectionCallbacks, Goo
     }
 
     private PendingIntent getGeofencePendingIntent() {
-        Intent intent = new Intent(context, GeoFenceTransitionsIntentService.class);
+        Intent intent = new Intent(context, GeofenceTransitionsIntentService.class);
         return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

@@ -42,12 +42,12 @@ import java.util.Observer;
 /**
  * Listens for geofence transition changes.
  */
-public class GeoFenceTransitionsIntentService extends IntentService implements Observer {
+public class GeofenceTransitionsIntentService extends IntentService implements Observer {
 
     protected static final String TAG = "GeofenceTransitionsIS";
     private ArrayList<String> channelsList;
 
-    public GeoFenceTransitionsIntentService() {
+    public GeofenceTransitionsIntentService() {
         super(TAG);
     }
 

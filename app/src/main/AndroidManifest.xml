@@ -62,7 +62,7 @@
             android:name=".services.GeoFenceTransitionsIntentService"
             android:exported="false" />
 
-        <receiver android:name=".services.GeoFenceReceiver">
+        <receiver android:name=".services.GeofenceReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

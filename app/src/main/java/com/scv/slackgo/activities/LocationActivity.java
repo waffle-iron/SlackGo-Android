@@ -30,7 +30,7 @@ import com.scv.slackgo.helpers.ErrorUtils;
 import com.scv.slackgo.helpers.GsonUtils;
 import com.scv.slackgo.helpers.Preferences;
 import com.scv.slackgo.models.Location;
-import com.scv.slackgo.services.GeoFenceService;
+import com.scv.slackgo.services.GeofenceService;
 import com.scv.slackgo.services.SlackApiService;
 
 import java.math.BigDecimal;
@@ -58,7 +58,7 @@ public class LocationActivity extends MapActivity implements Observer {
     private ArrayList<String> channelsList;
     private String toastMsg;
     SlackApiService slackService;
-    GeoFenceService geoFenceService;
+    GeofenceService geofenceService;
     PlaceAutocompleteFragment autocompleteFragment;
     ListView channelsListView;
 
@@ -279,7 +279,7 @@ public class LocationActivity extends MapActivity implements Observer {
 
         if (isValidLocation(newLocation)) {
             Preferences.addLocationToSharedPreferences(LocationActivity.this, newLocation);
-            geoFenceService = new GeoFenceService(LocationActivity.this, mGeofenceList);
+            geofenceService = new GeofenceService(LocationActivity.this, mGeofenceList);
             goToLocationActivity();
         } else {
             ErrorUtils.toastError(this, toastMsg, Toast.LENGTH_SHORT);
@@ -307,7 +307,7 @@ public class LocationActivity extends MapActivity implements Observer {
             Preferences.removeDataFromSharedPreferences(this, Constants.INTENT_LOCATION_LIST);
             Preferences.addLocationsListToSharedPreferences(this, locationsList);
             //adding geofences
-            geoFenceService = new GeoFenceService(LocationActivity.this, mGeofenceList);
+            geofenceService = new GeofenceService(LocationActivity.this, mGeofenceList);
             goToLocationActivity();
         } else {
             ErrorUtils.toastError(this, toastMsg, Toast.LENGTH_SHORT);
