@@ -25,9 +25,9 @@ public class Preferences {
         editor.commit();
     }
 
-    public static ArrayList<Location> getLocationsList(Activity activity) {
+    public static ArrayList<Location> getLocationsList(Context context) {
         Gson gson = new Gson();
-        SharedPreferences sharedPreferences = activity.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         String locationsJSON = sharedPreferences.getString(Constants.SHARED_PREFERENCES_LOCATIONS, "");
 
         Type listOfTestObject = new TypeToken<List<Location>>() {
@@ -42,7 +42,7 @@ public class Preferences {
         return ((locations == null) || (locations.size() == 0));
     }
 
-    public static void addLocationsListToSharedPreferences(Activity activity, ArrayList<Location> locations) {
+    public static void addLocationsListToSharedPreferences(Activity activity, List<Location> locations) {
         Gson gson = new Gson();
         String locationsJSON = gson.toJson(locations);
 
@@ -64,7 +64,7 @@ public class Preferences {
         addLocationsListToSharedPreferences(activity, listOfLocations);
     }
 
-    public static void deleteLocationFromList(Activity activity, Location location, ArrayList<Location> locationsList) {
+    public static void deleteLocationFromList(Activity activity, Location location, List<Location> locationsList) {
         locationsList.remove(location);
         removeDataFromSharedPreferences(activity, Constants.SHARED_PREFERENCES_LOCATIONS);
         if (locationsList.size() > 0) {

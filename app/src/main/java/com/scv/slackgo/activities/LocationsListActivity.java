@@ -106,9 +106,15 @@ public class LocationsListActivity extends MapActivity {
         this.googleMap.getUiSettings().setZoomControlsEnabled(true);
         this.googleMap.getUiSettings().setCompassEnabled(true);
 
-        Location officeLocation = Location.getSCVLocation();
+        if (locationsList != null) {
+            for (Location loc : locationsList) {
+                this.setMarker(loc);
+            }
+        } else {
+            //TODO change SCV to Default location anywhere.
+            this.setMarker(Location.getSCVLocation());
+        }
 
-        this.setMarker(officeLocation);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             googleMap.setMyLocationEnabled(true);
@@ -127,4 +133,5 @@ public class LocationsListActivity extends MapActivity {
             break;
         }
     }
+
 }

@@ -17,6 +17,7 @@ import org.apache.commons.collections4.Predicate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by SCV on 10/25/16.
@@ -24,7 +25,7 @@ import java.util.Collection;
 
 public class ChannelListHelper {
 
-    public static void buildList(final Activity context, final ArrayList<String> values, ListView channelsListView) {
+    public static void buildList(final Activity context, final List<String> values, ListView channelsListView) {
 
         channelsListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         channelsListView.setItemsCanFocus(false);

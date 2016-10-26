@@ -2,7 +2,7 @@ package com.scv.slackgo.services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.Toast;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -34,6 +34,9 @@ import java.util.Observer;
  */
 
 public class SlackApiService extends Observable implements APIInterface {
+
+    protected static final String TAG = "GeofenceTransitionsIS";
+
 
     private RequestQueue queue;
     private Context context;
@@ -69,13 +72,13 @@ public class SlackApiService extends Observable implements APIInterface {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        ErrorUtils.toastError(context, response, Toast.LENGTH_SHORT);
+                        Log.e(TAG,response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        ErrorUtils.toastError(context, error.getMessage(), Toast.LENGTH_SHORT);
+                        Log.e(TAG,error.getMessage());
                     }
                 });
         queue.add(request);

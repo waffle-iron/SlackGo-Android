@@ -67,7 +67,9 @@ public final class Constants {
     public static final String TAG = "GeoFenceActivity";
     public static final String OFFICE_CHANNEL= "oficina";
     public static final String ASK_LOCATION= "Please active your location";
-    public static final float RADIUS_METERS = 60.0f;
+    public static final float DEFAULT_RADIUS_METERS = 100.0f;
+    public static final float DEFAULT_CAMERA_ZOOM = 15.0f;
+
     public static final String API_TOKEN= "api token";
     public static final String SELECTED_CHANNEL="selected channel";
     public static final String SLACK_TOKEN= "slack.token";

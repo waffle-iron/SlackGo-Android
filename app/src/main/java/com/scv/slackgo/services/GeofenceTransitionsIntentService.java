@@ -38,13 +38,10 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import static com.android.volley.Request.Method.HEAD;
-
 /**
  * Listens for geofence transition changes.
  */
 public class GeofenceTransitionsIntentService extends IntentService implements Observer {
-
 
     protected static final String TAG = "GeofenceTransitionsIS";
     private ArrayList<String> channelsList;

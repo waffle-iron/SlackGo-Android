@@ -1,7 +1,6 @@
 package com.scv.slackgo.helpers;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 import com.scv.slackgo.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -31,7 +29,7 @@ class ChannelsListAdapter extends ArrayAdapter<String>
     ViewHolder viewHolder;
 
     public ChannelsListAdapter(Activity context, int textViewResourceId,
-                         ArrayList<String> channels) {
+                         List<String> channels) {
 
         //let android do the initializing :)
         super(context, textViewResourceId, channels);
