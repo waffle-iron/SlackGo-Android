@@ -2,6 +2,7 @@ package com.scv.slackgo.services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -67,12 +68,14 @@ public class SlackApiService extends Observable implements APIInterface {
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
-                    public void onResponse(String response) {}
+                    public void onResponse(String response) {
+                        ErrorUtils.toastError(context, response, Toast.LENGTH_SHORT);
+                    }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        ErrorUtils.showErrorAlert(context);
+                        ErrorUtils.toastError(context, error.getMessage(), Toast.LENGTH_SHORT);
                     }
                 });
         queue.add(request);
@@ -81,18 +84,18 @@ public class SlackApiService extends Observable implements APIInterface {
 
     private String FromatUrl(int urlIndex, boolean isTokenNeeded, String... params) {
 
-        if(isTokenNeeded) {
+        if (isTokenNeeded) {
             String slackToken = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, context.MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
-            return String.format(context.getString(urlIndex), slackToken, params);
+            return String.format(context.getString(urlIndex), slackToken, params[0]);
         }
-        return String.format(context.getString(urlIndex), params);
+        return String.format(context.getString(urlIndex), params[0]);
     }
 
     @Override
     public void getAvailableChannels() {
 
         String slackToken = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, context.MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
-        String url = String.format(context.getString(R.string.slack_channels_url), slackToken );
+        String url = String.format(context.getString(R.string.slack_channels_url), slackToken);
 
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -150,7 +153,7 @@ public class SlackApiService extends Observable implements APIInterface {
     private void getChannelsName(JSONArray listOfChannelsAsJSON) throws JSONException {
 
         List<Channel> channels = new ArrayList<>();
-        for(int i = 0; i < listOfChannelsAsJSON.length(); i++) {
+        for (int i = 0; i < listOfChannelsAsJSON.length(); i++) {
             channels.add(GsonUtils.setObject(new Channel(), listOfChannelsAsJSON.getJSONObject(i)));
         }
 

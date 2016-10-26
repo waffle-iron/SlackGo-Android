@@ -1,7 +1,10 @@
 package com.scv.slackgo.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,7 +16,6 @@ import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.GsonUtils;
 import com.scv.slackgo.helpers.Preferences;
 import com.scv.slackgo.models.Location;
-import com.scv.slackgo.services.SlackApiService;
 
 import java.util.ArrayList;
 
@@ -23,10 +25,8 @@ import java.util.ArrayList;
  */
 public class LocationsListActivity extends MapActivity {
 
-    SlackApiService slackService;
     ListView listView;
     ArrayList<Location> locationsList = new ArrayList<Location>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,5 +107,22 @@ public class LocationsListActivity extends MapActivity {
         Location officeLocation = Location.getSCVLocation();
 
         this.setMarker(officeLocation);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+        }
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        for (String permisson : permissions) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    googleMap.setMyLocationEnabled(true);
+            }
+                break;
+        }
+    }
+
 }

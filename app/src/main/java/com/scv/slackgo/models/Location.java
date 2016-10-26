@@ -1,5 +1,6 @@
 package com.scv.slackgo.models;
 
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.model.LatLng;
 import com.scv.slackgo.helpers.Constants;
 
@@ -18,6 +19,7 @@ public class Location {
     private float radius;
     private float cameraZoom;
     private ArrayList<String> channels;
+    private Geofence geofence;
 
 
     public Location(String name, double latitude, double longitude, float radius, float cameraZoom, ArrayList<String> channels) {

@@ -21,119 +21,79 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.android.volley.RequestQueue;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
 import com.scv.slackgo.R;
-import com.scv.slackgo.activities.LoginActivity;
-import com.scv.slackgo.helpers.GeofenceErrorMessages;
+import com.scv.slackgo.activities.LocationActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
  * Listens for geofence transition changes.
  */
-public class GeofenceTransitionsIntentService extends IntentService {
+public class GeofenceTransitionsIntentService extends IntentService implements Observer {
 
     protected static final String TAG = "GeofenceTransitionsIS";
-
-
-    private GoogleApiClient mGoogleApiClient;
-
-    public RequestQueue queue;
-
-    private String apiToken;
+    private ArrayList<String> channelsList;
 
     public GeofenceTransitionsIntentService() {
         super(TAG);
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-    }
-
-    /**
-     * Handles incoming intents.
-     * @param intent The Intent sent by Location Services. This Intent is provided to Location
-     * Services (inside a PendingIntent) when addGeofences() is called.
-     */
+    //TODO get channel where to join or leave.
     @Override
     protected void onHandleIntent(Intent intent) {
-//        apiToken = intent.getStringExtra(Constants.API_TOKEN);
-
-        GeofencingEvent geoFenceEvent = GeofencingEvent.fromIntent(intent);
-        if (geoFenceEvent.hasError()) {
-            int errorCode = geoFenceEvent.getErrorCode();
-            String errorMessage = GeofenceErrorMessages.getErrorString(this,
-                                                                       geoFenceEvent.getErrorCode());
-            Log.e(TAG, errorMessage);
+        GeofencingEvent event = GeofencingEvent.fromIntent(intent);
+        if (event.hasError()) {
+            Log.e(TAG, "GeofencingEvent Error: " + event.getErrorCode());
+            String description = getGeofenceTransitionDetails(event);
+            sendNotification(description);
+            return;
+        }
+        int transitionType = event.getGeofenceTransition();
+        String msg = "";
+        SlackApiService slackApiService = new SlackApiService(this);
+        if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER) {
+            msg = getString(R.string.entering_geofence);
+            slackApiService.joinChannel("oficina");
+        }
+        if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
+            msg = getString(R.string.going_out_geofence);
+            slackApiService.leaveChannel("C04C5T185");
         }
 
-        int transitionType = geoFenceEvent.getGeofenceTransition();
+        sendNotification(msg);
 
-        if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER ||
-            transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
-
-            List<Geofence> triggeringGeofences = geoFenceEvent.getTriggeringGeofences();
-            String geofenceTransitionDetails = getGeofenceTransitionDetails(this, transitionType, triggeringGeofences);
-
-            sendNotification(geofenceTransitionDetails);
-            Log.i(TAG, geofenceTransitionDetails);
-        }
-        else {
-            Log.e(TAG, getString(R.string.geofence_transition_invalid_type, transitionType));
-        }
     }
 
-
-
-    private String getGeofenceTransitionDetails(
-            Context context,
-            int geofenceTransition,
-            List<Geofence> triggeringGeofences) {
-
-        String geofenceTransitionString = getTransitionString(geofenceTransition);
-
-        // Get the Ids of each geofence that was triggered.
-        ArrayList triggeringGeofencesIdsList = new ArrayList();
-        for (Geofence geofence : triggeringGeofences) {
-            triggeringGeofencesIdsList.add(geofence.getRequestId());
+    private static String getGeofenceTransitionDetails(GeofencingEvent event) {
+        String transitionString =
+                GeofenceStatusCodes.getStatusCodeString(event.getGeofenceTransition());
+        List triggeringIDs = new ArrayList();
+        for (Geofence geofence : event.getTriggeringGeofences()) {
+            triggeringIDs.add(geofence.getRequestId());
         }
-        String triggeringGeofencesIdsString = TextUtils.join(", ", triggeringGeofencesIdsList);
-
-        return geofenceTransitionString + ": " + triggeringGeofencesIdsString;
+        return String.format("%s: %s", transitionString, TextUtils.join(", ", triggeringIDs));
     }
 
-    /**
-     * Posts a notification in the notification bar when a transition is detected.
-     * If the user clicks the notification, control goes to the LoginActivity.
-     */
     private void sendNotification(String notificationDetails) {
-        // Create an explicit content Intent that starts the main Activity.
-        Intent notificationIntent = new Intent(getApplicationContext(), LoginActivity.class);
-
-        // Construct a task stack.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-
-        // Add the main Activity to the task stack as the parent.
-        stackBuilder.addParentStack(LoginActivity.class);
-
-        // Push the content Intent onto the stack.
-        stackBuilder.addNextIntent(notificationIntent);
+        // Create an explicit content Intent that starts MainActivity.
+        Intent notificationIntent = new Intent(getApplicationContext(), LocationActivity.class);
 
         // Get a PendingIntent containing the entire back stack.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(LocationActivity.class).addNextIntent(notificationIntent);
         PendingIntent notificationPendingIntent =
                 stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -141,42 +101,23 @@ public class GeofenceTransitionsIntentService extends IntentService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         // Define the notification settings.
-        builder.setSmallIcon(R.mipmap.ic_launcher)
-               // In a real app, you may want to use a library like Volley
-               // to decode the Bitmap.
-               .setLargeIcon(BitmapFactory.decodeResource(getResources(),
-                                                          R.mipmap.ic_launcher))
-               .setColor(Color.RED)
-               .setContentTitle(notificationDetails)
-               .setContentText("Click notification to return app")
-               .setContentIntent(notificationPendingIntent);
+        builder.setColor(Color.RED)
+                .setSmallIcon(R.drawable.common_ic_googleplayservices)
+                .setContentTitle(notificationDetails)
+                .setContentText("Click notification to return to App")
+                .setContentIntent(notificationPendingIntent)
+                .setAutoCancel(true);
 
-        // Dismiss notification once the user touches it.
-        builder.setAutoCancel(true);
-
-        // Get an instance of the Notification manager
-        NotificationManager mNotificationManager =
+        // Fire and notify the built Notification.
+        NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Issue the notification
-        mNotificationManager.notify(0, builder.build());
+        notificationManager.notify(0, builder.build());
     }
 
-    /**
-     * Maps geofence transition types to their human-readable equivalents.
-     *
-     * @param transitionType    A transition type constant defined in Geofence
-     * @return                  A String indicating the type of transition
-     */
-    private String getTransitionString(int transitionType) {
-        switch (transitionType) {
-            case Geofence.GEOFENCE_TRANSITION_ENTER:
-                return getString(R.string.geofence_transition_entered);
-            case Geofence.GEOFENCE_TRANSITION_EXIT:
-                return getString(R.string.geofence_transition_exited);
-            default:
-                return getString(R.string.unknown_geofence_transition);
+    @Override
+    public void update(Observable observable, Object data) {
+        if (data != null) {
+            channelsList = (ArrayList<String>) data;
         }
     }
-
 }
