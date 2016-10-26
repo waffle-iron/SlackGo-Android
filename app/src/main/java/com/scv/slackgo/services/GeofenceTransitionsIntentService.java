@@ -70,7 +70,7 @@ public class GeofenceTransitionsIntentService extends IntentService implements O
         }
         if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
             msg = getString(R.string.going_out_geofence);
-            slackApiService.leaveChannel("oficina");
+            slackApiService.leaveChannel("C04C5T185");
         }
 
         sendNotification(msg);

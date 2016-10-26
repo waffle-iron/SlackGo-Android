@@ -30,7 +30,7 @@
 
     <string name="location_hint">Location Name</string>
 
-
+    <string name="channels_to_join">Channels to join: </string>>
 
 
     <string name="channel_office">oficina</string>
@@ -43,11 +43,11 @@
     <string name="slack_token_url">https://slack.com/api/oauth.access?client_id=%1$s&amp;client_secret=%2$s&amp;code=%3$s&amp;redirect_uri=%4$s</string>
     <string name="slack_channels_url">https://slack.com/api/channels.list?token=%1$s</string>
     <string name="slack_channel_join">https://slack.com/api/channels.join?token=%1$s&amp;name=%2$s</string>
-    <string name="slack_channel_leave">https://slack.com/api/channels.leave?token=%1$s&amp;name=%2$s</string>
+    <string name="slack_channel_leave">https://slack.com/api/channels.leave?token=%1$s&amp;channel=%2$s</string>
     <string name="client_id">2946387922.79631581941</string>
     <string name="redirect_oauth">scv%3A%2F%2Fauthorize</string>
     <string name="client_secret">4800a7de9816b75e6906ed166ff5662c</string>
-    <string name="slack_scope">channels:read</string>
+    <string name="slack_scope">channels:write</string>
     <string name="slack_token">slackToken</string>
 
     <string name="region_lat_sufix">_lat</string>
@@ -72,7 +72,6 @@
     <string name="geofence_transition_notification_text">Click notification to return app</string>
     <string name="entering_geofence">You are entering in a channel geofence</string>
     <string name="going_out_geofence">You are going out of a channel geofence</string>
-
 
 
 </resources>

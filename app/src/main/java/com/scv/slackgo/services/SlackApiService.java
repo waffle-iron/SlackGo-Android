@@ -2,6 +2,7 @@ package com.scv.slackgo.services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -68,12 +69,13 @@ public class SlackApiService extends Observable implements APIInterface {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        ErrorUtils.toastError(context, response, Toast.LENGTH_SHORT);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        ErrorUtils.showErrorAlert(context);
+                        ErrorUtils.toastError(context, error.getMessage(), Toast.LENGTH_SHORT);
                     }
                 });
         queue.add(request);
@@ -84,9 +86,9 @@ public class SlackApiService extends Observable implements APIInterface {
 
         if (isTokenNeeded) {
             String slackToken = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, context.MODE_PRIVATE).getString(Constants.SLACK_TOKEN, null);
-            return String.format(context.getString(urlIndex), slackToken, params);
+            return String.format(context.getString(urlIndex), slackToken, params[0]);
         }
-        return String.format(context.getString(urlIndex), params);
+        return String.format(context.getString(urlIndex), params[0]);
     }
 
     @Override

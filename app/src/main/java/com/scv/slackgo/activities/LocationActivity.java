@@ -9,8 +9,6 @@ import android.support.v4.app.ActivityCompat;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,6 +23,7 @@ import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.GoogleMap;
 import com.scv.slackgo.R;
+import com.scv.slackgo.helpers.ChannelListHelper;
 import com.scv.slackgo.helpers.Constants;
 import com.scv.slackgo.helpers.ErrorUtils;
 import com.scv.slackgo.helpers.GsonUtils;
@@ -53,6 +52,7 @@ public class LocationActivity extends MapActivity implements Observer {
     private EditText locationName;
     private Button saveLocationButton;
     private Button delLocationButton;
+    private Button addChannelsButton;
     private Location location;
     private ArrayList<Location> locationsList;
     private ArrayList<String> channelsList;
@@ -145,14 +145,13 @@ public class LocationActivity extends MapActivity implements Observer {
 
         location = GsonUtils.getObjectFromJson(locationJSON, Location.class);
         locationsList = GsonUtils.getListFromJson(locationsListJSON, Location[].class);
-
-        slackService = new SlackApiService(this);
         //Get resources
         locationSeekBar = (SeekBar) findViewById(R.id.location_radius_seek_bar);
         locationRadiusValue = (TextView) findViewById(R.id.location_radius_value);
         locationName = (EditText) findViewById(R.id.location_name);
         saveLocationButton = (Button) findViewById(R.id.save_location_button);
         delLocationButton = (Button) findViewById(R.id.del_location_button);
+        addChannelsButton = (Button) findViewById(R.id.add_channels);
         locationSeekBar.setMax(100);
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -202,6 +201,14 @@ public class LocationActivity extends MapActivity implements Observer {
                     addNewLocation();
                 }
             }
+        });
+
+        addChannelsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ChannelListHelper.buildList(LocationActivity.this, channelsList, channelsListView);
+            }
+
         });
     }
 
@@ -337,7 +344,7 @@ public class LocationActivity extends MapActivity implements Observer {
     public void update(Observable observable, Object data) {
         if (data != null) {
 
-            ArrayList<String> dataAsstrings = new ArrayList<String>(((ArrayList<Object>)data).size());
+            ArrayList<String> dataAsstrings = new ArrayList<String>(((ArrayList<Object>) data).size());
             for (Object object : (ArrayList<Object>) data) {
                 dataAsstrings.add(Objects.toString(object, null));
             }
@@ -346,18 +353,6 @@ public class LocationActivity extends MapActivity implements Observer {
             channelsList = dataAsstrings;
             String[] values = dataAsstrings.toArray(dataArr);
 
-            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(LocationActivity.this,
-                    android.R.layout.select_dialog_multichoice, android.R.id.text1, values);
-
-            channelsListView.setAdapter(adapter);
-
-            channelsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position,
-                                        long id) {
-                    channelsListView.setItemChecked(position, true);
-                }
-            });
         } else {
             slackService.getAvailableChannels();
         }

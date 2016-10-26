@@ -20,7 +20,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="mmm mmm" />
+            android:value="AIzaSyAEv7OX4I4AfKu_-PFCCltTKVxPFJGGTEQ" />
 
 
         <uses-library android:name="com.google.android.maps" />
@@ -59,7 +59,7 @@
 
 
         <service
-            android:name=".services.GeoFenceTransitionsIntentService"
+            android:name=".services.GeofenceTransitionsIntentService"
             android:exported="false" />
 
         <receiver android:name=".services.GeofenceReceiver">
